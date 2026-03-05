@@ -46,13 +46,13 @@
 
     --elimination-red: 0 72% 50%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(270 20% 95%), hsl(30 20% 97%), hsl(38 25% 95%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 45% 40%), hsl(270 35% 50%), hsl(38 40% 45%));
     --gradient-accent: linear-gradient(135deg, hsl(270 60% 50%), hsl(38 55% 50%));
     --gradient-section-alt: linear-gradient(180deg, hsl(220 14% 96%), hsl(30 20% 97%));
 
     --shadow-card: 0 2px 12px hsl(220 15% 70% / 0.15);
     --shadow-card-hover: 0 8px 30px hsl(220 15% 70% / 0.2), 0 0 12px hsl(270 60% 50% / 0.06);
-    --shadow-hero: 0 12px 40px hsl(220 15% 70% / 0.2);
+    --shadow-hero: 0 12px 40px hsl(270 40% 30% / 0.3);
     --shadow-glow-rose: 0 0 20px hsl(270 60% 50% / 0.1), 0 0 40px hsl(270 60% 50% / 0.04);
     --shadow-glow-gold: 0 0 16px hsl(45 90% 48% / 0.15), 0 0 32px hsl(45 90% 48% / 0.06);
     --shadow-glow-silver: 0 0 14px hsl(210 10% 55% / 0.12);
@@ -304,10 +304,10 @@
 
   .headline-ticker {
     @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(270 40% 92%), hsl(270 30% 96%));
-    border: 1px solid hsl(270 60% 50% / 0.15);
+    background: linear-gradient(135deg, hsl(270 50% 42%), hsl(270 40% 50%));
+    border: 1px solid hsl(270 60% 50% / 0.3);
     box-shadow: var(--shadow-glow-rose);
-    color: hsl(270 40% 35%);
+    color: white;
   }
   .dark .headline-ticker {
     background: linear-gradient(135deg, hsl(270 50% 30%), hsl(270 40% 22%));
