@@ -17,6 +17,7 @@ interface FeedItem {
 // In-memory cache: feedUrl -> { items, timestamp }
 const cache = new Map<string, { items: FeedItem[]; ts: number }>();
 const CACHE_MS = 30 * 60 * 1000; // 30 minutes
+const FETCH_TIMEOUT_MS = 8000; // 8 second timeout per feed
 
 function parseRSS(xml: string, sourceName: string): FeedItem[] {
   const items: FeedItem[] = [];
@@ -81,6 +82,18 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 }
 
+function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, {
+    signal: controller.signal,
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; BracketHQ/1.0; +https://brackethq.app)",
+      "Accept": "application/rss+xml, application/xml, text/xml, */*",
+    },
+  }).finally(() => clearTimeout(timer));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -108,9 +121,7 @@ Deno.serve(async (req) => {
         }
 
         try {
-          const resp = await fetch(feed.url, {
-            headers: { "User-Agent": "BracketHQ-RSS/1.0" },
-          });
+          const resp = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
           if (!resp.ok) {
             errors.push(`${feed.name}: HTTP ${resp.status}`);
             await resp.text(); // consume body
@@ -121,7 +132,9 @@ Deno.serve(async (req) => {
           cache.set(feed.url, { items, ts: Date.now() });
           allItems.push(...items);
         } catch (e) {
-          errors.push(`${feed.name}: ${e instanceof Error ? e.message : "Failed"}`);
+          const msg = e instanceof Error ? e.message : "Failed";
+          const label = msg.includes("abort") ? "Timeout" : msg;
+          errors.push(`${feed.name}: ${label}`);
         }
       })
     );
@@ -138,7 +151,7 @@ Deno.serve(async (req) => {
     // Sort newest first
     deduped.sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
 
-    return new Response(JSON.stringify({ items: deduped.slice(0, 20), errors }), {
+    return new Response(JSON.stringify({ items: deduped.slice(0, 30), errors }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Trophy, Users, Grid3X3, Megaphone, Newspaper, BookOpen, Menu, X } from "lucide-react";
+import { Home, Trophy, Users, Grid3X3, Megaphone, Newspaper, BookOpen, Menu, X, Sun, Moon } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 const navItems = [
   { path: "/", label: "HQ", icon: Home },
@@ -15,6 +16,9 @@ const navItems = [
 export function AppNav() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
   return (
     <>
@@ -42,6 +46,15 @@ export function AppNav() {
             </Link>
           );
         })}
+        <div className="ml-auto">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile nav */}
@@ -52,9 +65,18 @@ export function AppNav() {
             <span className="font-display font-bold text-foreground text-sm tracking-tight">Bracket HQ</span>
             <span className="text-[10px] font-bold bg-primary/90 text-primary-foreground px-1.5 py-0.5 rounded-full animate-live-pulse">LIVE</span>
           </Link>
-          <button onClick={() => setOpen(!open)} className="text-foreground p-1">
-            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button onClick={() => setOpen(!open)} className="text-foreground p-1">
+              {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
         {open && (
           <div className="px-4 pb-3 space-y-1 animate-slide-up">

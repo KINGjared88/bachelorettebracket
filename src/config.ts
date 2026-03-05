@@ -43,12 +43,16 @@ export const CONFIG = {
   SINGLE_CSV_URL: "",
 
   /**
-   * Default curated RSS feeds for Bachelorette news.
+   * Curated RSS feeds for Bachelorette / Bachelor Nation news.
    * These are fetched server-side via the rss-proxy edge function.
    */
   RSS_FEEDS: [
     { name: "Entertainment Tonight – TV", url: "https://www.etonline.com/tv/rss" },
     { name: "Entertainment Tonight – The Bachelorette", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
+    { name: "Us Weekly – Entertainment", url: "https://www.usmagazine.com/feed/" },
+    { name: "People Magazine", url: "https://people.com/feed/" },
+    { name: "E! News – TV", url: "https://www.eonline.com/syndication/feeds/rssfeeds/topstories.xml" },
+    { name: "Reality Tea", url: "https://www.realitytea.com/feed/" },
   ] as { name: string; url: string }[],
 
   /** News cache duration in minutes */
