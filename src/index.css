@@ -303,10 +303,10 @@
 
   /* Nav bar */
   .nav-dark {
-    background: hsl(250 40% 10% / 0.9);
+    background: hsl(280 28% 18% / 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid hsl(var(--border));
-    box-shadow: 0 4px 24px hsl(260 50% 5% / 0.4);
+    border-bottom: 1px solid hsl(275 20% 32% / 0.6);
+    box-shadow: 0 4px 24px hsl(280 40% 8% / 0.5);
   }
 }
