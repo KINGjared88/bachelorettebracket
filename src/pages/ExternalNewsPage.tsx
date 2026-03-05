@@ -41,7 +41,7 @@ export default function ExternalNewsPage() {
 
       try {
         const { data, error } = await supabase.functions.invoke("rss-proxy", {
-          body: { feeds: CONFIG.RSS_FEEDS },
+          body: { feeds: CONFIG.RSS_FEEDS, keywords: CONFIG.NEWS_KEYWORDS },
         });
         if (error) { setFeedErrors([`RSS proxy error: ${error.message}`]); setLoading(false); return; }
         const items: NewsItem[] = data?.items || [];
