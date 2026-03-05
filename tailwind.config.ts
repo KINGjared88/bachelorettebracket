@@ -55,6 +55,7 @@ export default {
         silver: "hsl(var(--silver))",
         bronze: "hsl(var(--bronze))",
         "rose-pink": "hsl(var(--rose-pink))",
+        fire: "hsl(var(--fire))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -88,12 +89,33 @@ export default {
           from: { transform: "translateY(10px)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
+        "bounce-arrow": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
+        "ticker-scroll": {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+        "score-pop": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.15)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 10px hsl(25 95% 55% / 0.2)" },
+          "50%": { boxShadow: "0 0 25px hsl(25 95% 55% / 0.4)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-rose": "pulse-rose 2s ease-in-out infinite",
         "slide-up": "slide-up 0.4s ease-out",
+        "bounce-arrow": "bounce-arrow 1s ease-in-out infinite",
+        "ticker-scroll": "ticker-scroll 15s linear infinite",
+        "score-pop": "score-pop 0.3s ease-out",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },
