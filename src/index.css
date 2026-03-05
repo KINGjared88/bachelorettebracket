@@ -304,10 +304,10 @@
 
   .headline-ticker {
     @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(270 40% 92%), hsl(270 30% 96%));
-    border: 1px solid hsl(270 60% 50% / 0.15);
+    background: linear-gradient(135deg, hsl(270 50% 42%), hsl(270 40% 50%));
+    border: 1px solid hsl(270 60% 50% / 0.3);
     box-shadow: var(--shadow-glow-rose);
-    color: hsl(270 40% 35%);
+    color: white;
   }
   .dark .headline-ticker {
     background: linear-gradient(135deg, hsl(270 50% 30%), hsl(270 40% 22%));
