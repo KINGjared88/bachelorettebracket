@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Space Grotesk', 'sans-serif'],
-        body: ['Plus Jakarta Sans', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
+        body: ['Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -54,8 +55,8 @@ export default {
         gold: "hsl(var(--gold))",
         silver: "hsl(var(--silver))",
         bronze: "hsl(var(--bronze))",
-        "rose-pink": "hsl(var(--rose-pink))",
-        fire: "hsl(var(--fire))",
+        "rose-red": "hsl(var(--rose-red))",
+        champagne: "hsl(var(--champagne))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -93,18 +94,17 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-3px)" },
         },
-        "ticker-scroll": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(-100%)" },
-        },
-        "score-pop": {
-          "0%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.15)" },
-          "100%": { transform: "scale(1)" },
-        },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 10px hsl(25 95% 55% / 0.2)" },
-          "50%": { boxShadow: "0 0 25px hsl(25 95% 55% / 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 10px hsl(350 72% 52% / 0.15)" },
+          "50%": { boxShadow: "0 0 25px hsl(350 72% 52% / 0.35)" },
+        },
+        "live-pulse": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.4" },
+        },
+        "fade-in-page": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
       },
       animation: {
@@ -113,9 +113,9 @@ export default {
         "pulse-rose": "pulse-rose 2s ease-in-out infinite",
         "slide-up": "slide-up 0.4s ease-out",
         "bounce-arrow": "bounce-arrow 1s ease-in-out infinite",
-        "ticker-scroll": "ticker-scroll 15s linear infinite",
-        "score-pop": "score-pop 0.3s ease-out",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "live-pulse": "live-pulse 2s ease-in-out infinite",
+        "fade-in-page": "fade-in-page 0.3s ease-out",
       },
     },
   },
