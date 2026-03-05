@@ -51,7 +51,7 @@ export default function ContestantsPage() {
     return Object.fromEntries(Object.entries(counts).map(([k, v]) => [k, v.size]));
   }, [data.picks]);
 
-  const maxDrafted = Math.max(...Object.values(draftCounts), 0);
+
 
   const pointsGenerated = useMemo(() => {
     const pts: Record<string, number> = {};
