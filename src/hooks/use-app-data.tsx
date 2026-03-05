@@ -11,6 +11,7 @@ const defaultData: AppData = {
   lastUpdated: null,
   loading: true,
   error: null,
+  csvErrors: [],
 };
 
 const DataContext = createContext<{
@@ -22,7 +23,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>(defaultData);
 
   const refresh = useCallback(async () => {
-    setData((d) => ({ ...d, loading: true, error: null }));
+    setData((d) => ({ ...d, loading: true, error: null, csvErrors: [] }));
     const result = await loadAppData();
     setData(result);
   }, []);

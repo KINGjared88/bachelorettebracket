@@ -22,7 +22,7 @@ export function AppNav() {
       <nav className="hidden md:flex items-center gap-1 px-4 py-3 hero-gradient sticky top-0 z-50">
         <Link to="/" className="flex items-center gap-2 mr-6">
           <span className="text-xl">🌹</span>
-          <span className="font-display font-bold text-primary-foreground text-lg">Bracket HQ</span>
+          <span className="font-display font-bold text-primary-foreground text-lg">Bachelorette Bracket HQ</span>
         </Link>
         {navItems.map((item) => {
           const active = location.pathname === item.path;
@@ -48,7 +48,7 @@ export function AppNav() {
         <div className="flex items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
             <span className="text-xl">🌹</span>
-            <span className="font-display font-bold text-primary-foreground">Bracket HQ</span>
+            <span className="font-display font-bold text-primary-foreground text-sm">Bachelorette Bracket HQ</span>
           </Link>
           <button onClick={() => setOpen(!open)} className="text-primary-foreground p-1">
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

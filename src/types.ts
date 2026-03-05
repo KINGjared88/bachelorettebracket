@@ -3,14 +3,14 @@ export interface Player {
   name: string;
   totalPoints: number;
   weeklyChange?: number;
-  topPick?: string; // contestant name ranked #1
+  topPick?: string;
 }
 
 export interface Pick {
   playerId: string;
   playerName: string;
   contestantName: string;
-  rankPoints: number; // points assigned to this contestant
+  rankPoints: number;
 }
 
 export interface WeeklyResult {
@@ -20,6 +20,7 @@ export interface WeeklyResult {
   receivedRose: boolean;
   eliminated: boolean;
   rosesThisWeek: number;
+  imageUrl?: string;
 }
 
 export interface Contestant {
@@ -56,7 +57,7 @@ export interface PlayerPick {
   contestantName: string;
   rankPoints: number;
   totalRosesReceived: number;
-  pointsEarned: number; // rankPoints * totalRosesReceived
+  pointsEarned: number;
   status: "active" | "eliminated";
 }
 
@@ -69,4 +70,5 @@ export interface AppData {
   lastUpdated: Date | null;
   loading: boolean;
   error: string | null;
+  csvErrors: string[];
 }
