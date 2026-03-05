@@ -1,66 +1,10 @@
 import { useEffect, useState } from "react";
 import { CONFIG } from "@/config";
+import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, Rss, AlertCircle, Loader2 } from "lucide-react";
 import type { NewsItem } from "@/types";
 
 const NEWS_CACHE_KEY = "bracket_hq_news_cache";
-
-async function fetchRSSFeed(feed: { name: string; url: string }): Promise<NewsItem[]> {
-  try {
-    // If a proxy URL is configured, use it
-    const fetchUrl = CONFIG.RSS_PROXY_URL
-      ? `${CONFIG.RSS_PROXY_URL}?url=${encodeURIComponent(feed.url)}`
-      : feed.url;
-
-    const response = await fetch(fetchUrl);
-
-    // If proxy returns JSON
-    if (CONFIG.RSS_PROXY_URL) {
-      const json = await response.json();
-      return (json.items || []).map((item: any) => ({
-        title: item.title || "",
-        url: item.url || item.link || "",
-        source: feed.name,
-        publishDate: item.publishDate || item.pubDate || "",
-        summary: item.summary || item.description || "",
-      }));
-    }
-
-    // Direct RSS/Atom parsing fallback
-    const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/xml");
-
-    const items: NewsItem[] = [];
-    const rssItems = doc.querySelectorAll("item");
-    rssItems.forEach((item) => {
-      items.push({
-        title: item.querySelector("title")?.textContent || "",
-        url: item.querySelector("link")?.textContent || "",
-        source: feed.name,
-        publishDate: item.querySelector("pubDate")?.textContent || "",
-        summary: item.querySelector("description")?.textContent?.replace(/<[^>]+>/g, "").slice(0, 200) || "",
-      });
-    });
-
-    if (items.length === 0) {
-      const entries = doc.querySelectorAll("entry");
-      entries.forEach((entry) => {
-        items.push({
-          title: entry.querySelector("title")?.textContent || "",
-          url: entry.querySelector("link")?.getAttribute("href") || "",
-          source: feed.name,
-          publishDate: entry.querySelector("published")?.textContent || entry.querySelector("updated")?.textContent || "",
-          summary: entry.querySelector("summary")?.textContent?.replace(/<[^>]+>/g, "").slice(0, 200) || "",
-        });
-      });
-    }
-
-    return items;
-  } catch {
-    return [];
-  }
-}
 
 export default function ExternalNewsPage() {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -69,14 +13,19 @@ export default function ExternalNewsPage() {
 
   useEffect(() => {
     async function load() {
+      // Check local cache first
       const cached = localStorage.getItem(NEWS_CACHE_KEY);
       if (cached) {
-        const { items, timestamp } = JSON.parse(cached);
-        const age = (Date.now() - timestamp) / 60000;
-        if (age < CONFIG.NEWS_CACHE_MINUTES) {
-          setNews(items);
-          setLoading(false);
-          return;
+        try {
+          const { items, timestamp } = JSON.parse(cached);
+          const age = (Date.now() - timestamp) / 60000;
+          if (age < CONFIG.NEWS_CACHE_MINUTES) {
+            setNews(items);
+            setLoading(false);
+            return;
+          }
+        } catch {
+          // ignore bad cache
         }
       }
 
@@ -85,34 +34,28 @@ export default function ExternalNewsPage() {
         return;
       }
 
-      const results = await Promise.allSettled(CONFIG.RSS_FEEDS.map(fetchRSSFeed));
-      const allItems: NewsItem[] = [];
-      const errors: string[] = [];
+      try {
+        const { data, error } = await supabase.functions.invoke("rss-proxy", {
+          body: { feeds: CONFIG.RSS_FEEDS },
+        });
 
-      results.forEach((r, i) => {
-        if (r.status === "fulfilled") {
-          allItems.push(...r.value);
-        } else {
-          errors.push(`${CONFIG.RSS_FEEDS[i].name}: Failed to load`);
+        if (error) {
+          setFeedErrors([`RSS proxy error: ${error.message}`]);
+          setLoading(false);
+          return;
         }
-      });
 
-      setFeedErrors(errors);
+        const items: NewsItem[] = data?.items || [];
+        const errors: string[] = data?.errors || [];
 
-      // Dedupe
-      const seen = new Set<string>();
-      const deduped = allItems.filter((item) => {
-        const key = item.url || item.title;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
+        setFeedErrors(errors);
 
-      deduped.sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
-      const top20 = deduped.slice(0, 20);
+        localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({ items, timestamp: Date.now() }));
+        setNews(items);
+      } catch (err) {
+        setFeedErrors([err instanceof Error ? err.message : "Failed to fetch news"]);
+      }
 
-      localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({ items: top20, timestamp: Date.now() }));
-      setNews(top20);
       setLoading(false);
     }
 
@@ -122,9 +65,9 @@ export default function ExternalNewsPage() {
   return (
     <div className="space-y-4 animate-slide-up">
       <h1 className="font-display text-2xl md:text-3xl font-bold flex items-center gap-2">
-        <Rss className="w-6 h-6 text-secondary" /> External News
+        <Rss className="w-6 h-6 text-secondary" /> Bachelorette News
       </h1>
-      <p className="text-muted-foreground text-sm">Latest Bachelorette news from configured feeds</p>
+      <p className="text-muted-foreground text-sm">Latest news from curated feeds</p>
 
       {feedErrors.length > 0 && (
         <div className="space-y-2">
@@ -144,10 +87,10 @@ export default function ExternalNewsPage() {
         </div>
       )}
 
-      {!loading && news.length === 0 && (
+      {!loading && news.length === 0 && feedErrors.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No news feeds configured</p>
-          <p className="text-xs text-muted-foreground mt-1">Add RSS feed entries in src/config.ts → RSS_FEEDS</p>
+          <p className="text-muted-foreground">No news available right now</p>
+          <p className="text-xs text-muted-foreground mt-1">News feeds are fetched automatically from curated sources</p>
         </div>
       )}
 
