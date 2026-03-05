@@ -1,5 +1,4 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,13 +8,30 @@ const corsHeaders = {
 
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_CUSTOM_SEARCH_API_KEY") || "";
 const GOOGLE_CX = Deno.env.get("GOOGLE_CUSTOM_SEARCH_CX") || "";
+const DEBUG = Deno.env.get("RESOLVE_IMAGE_DEBUG") === "true";
 
-// In-memory cache: name -> { url, ts }
 const imageCache = new Map<string, { url: string; ts: number }>();
-const CACHE_DAYS = 30;
-const CACHE_MS = CACHE_DAYS * 24 * 60 * 60 * 1000;
+const CACHE_MS = 30 * 24 * 60 * 60 * 1000;
 
-const ALLOWED_DOMAINS = ["abc.com", "bachelornation.com", "etonline.com", "people.com", "eonline.com"];
+const ALLOWED_DOMAINS = [
+  "abc.com",
+  "bachelornation.com",
+  "etonline.com",
+  "people.com",
+  "parade.com",
+  "ew.com",
+  "tvline.com",
+  "thewrap.com",
+  "hollywoodreporter.com",
+  "variety.com",
+  "deadline.com",
+];
+
+const PLACEHOLDER_URL = "https://ui-avatars.com/api/?background=e91e63&color=fff&size=256&bold=true";
+
+function placeholderFor(name: string) {
+  return `${PLACEHOLDER_URL}&name=${encodeURIComponent(name)}`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,62 +42,86 @@ Deno.serve(async (req) => {
     const { name } = await req.json() as { name: string };
 
     if (!name) {
-      return new Response(JSON.stringify({ imageUrl: null, error: "No name provided" }), {
+      return new Response(JSON.stringify({ imageUrl: placeholderFor("?"), error: "No name provided" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     // Check cache
-    const cached = imageCache.get(name.toLowerCase());
+    const cacheKey = name.toLowerCase().trim();
+    const cached = imageCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_MS) {
       return new Response(JSON.stringify({ imageUrl: cached.url }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Check if we have the API keys
     if (!GOOGLE_API_KEY || !GOOGLE_CX) {
-      return new Response(JSON.stringify({ imageUrl: null, error: "Image search API not configured" }), {
+      console.error("[resolve-image] Missing GOOGLE_CUSTOM_SEARCH_API_KEY or GOOGLE_CUSTOM_SEARCH_CX");
+      return new Response(JSON.stringify({ imageUrl: placeholderFor(name), error: "Image search API not configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Search Google Custom Search for images
-    const query = `${name} The Bachelorette Season 22`;
-    const siteRestrict = ALLOWED_DOMAINS.map((d) => `site:${d}`).join(" OR ");
-    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(GOOGLE_API_KEY)}&cx=${encodeURIComponent(GOOGLE_CX)}&q=${encodeURIComponent(query)}&searchType=image&num=5&imgType=photo&imgSize=medium&safe=active&siteSearch=${encodeURIComponent(ALLOWED_DOMAINS.join(","))}&siteSearchFilter=i`;
+    // Use the site-restricted CSE endpoint for compatibility with newer engines
+    const query = `${name} "The Bachelorette" Season 22 Taylor Frankie Paul`;
+    const baseUrl = "https://www.googleapis.com/customsearch/v1/siterestrict";
+    const params = new URLSearchParams({
+      key: GOOGLE_API_KEY,
+      cx: GOOGLE_CX,
+      q: query,
+      searchType: "image",
+      num: "5",
+      imgType: "photo",
+      imgSize: "medium",
+      safe: "active",
+    });
+
+    const searchUrl = `${baseUrl}?${params.toString()}`;
+
+    if (DEBUG) {
+      console.log(`[resolve-image][DEBUG] Query: "${query}"`);
+      console.log(`[resolve-image][DEBUG] URL: ${searchUrl}`);
+    }
 
     const resp = await fetch(searchUrl);
     const data = await resp.json();
 
-    if (!resp.ok || !data.items || data.items.length === 0) {
-      // Fallback: try without site restriction
-      const fallbackUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(GOOGLE_API_KEY)}&cx=${encodeURIComponent(GOOGLE_CX)}&q=${encodeURIComponent(query + " headshot")}&searchType=image&num=3&imgType=photo&imgSize=medium&safe=active`;
-      const fallbackResp = await fetch(fallbackUrl);
-      const fallbackData = await fallbackResp.json();
+    if (DEBUG) {
+      console.log(`[resolve-image][DEBUG] Status: ${resp.status}, Items: ${data.items?.length ?? 0}`);
+    }
 
-      if (fallbackData.items && fallbackData.items.length > 0) {
-        const imageUrl = fallbackData.items[0].link;
-        imageCache.set(name.toLowerCase(), { url: imageUrl, ts: Date.now() });
-        return new Response(JSON.stringify({ imageUrl }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      return new Response(JSON.stringify({ imageUrl: null }), {
+    if (!resp.ok) {
+      console.error(`[resolve-image] API error ${resp.status}: ${JSON.stringify(data.error?.message || data.error || "unknown")}`);
+      const debugInfo = DEBUG ? { apiStatus: resp.status, query, apiError: data.error?.message } : {};
+      return new Response(JSON.stringify({ imageUrl: placeholderFor(name), ...debugInfo }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Pick best result (first one from allowed domains)
-    const imageUrl = data.items[0].link;
-    imageCache.set(name.toLowerCase(), { url: imageUrl, ts: Date.now() });
+    if (!data.items || data.items.length === 0) {
+      console.warn(`[resolve-image] 0 results for "${name}" — query: "${query}"`);
+      const fallbackUrl = placeholderFor(name);
+      imageCache.set(cacheKey, { url: fallbackUrl, ts: Date.now() });
+      const debugInfo = DEBUG ? { apiStatus: resp.status, query, itemCount: 0 } : {};
+      return new Response(JSON.stringify({ imageUrl: fallbackUrl, ...debugInfo }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    return new Response(JSON.stringify({ imageUrl }), {
+    // Pick first result (engine is already site-restricted to allowed domains)
+    const imageUrl = data.items[0].link;
+    imageCache.set(cacheKey, { url: imageUrl, ts: Date.now() });
+
+    console.log(`[resolve-image] Resolved "${name}" → ${imageUrl}`);
+
+    const debugInfo = DEBUG ? { apiStatus: resp.status, query, itemCount: data.items.length } : {};
+    return new Response(JSON.stringify({ imageUrl, ...debugInfo }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ imageUrl: null, error: e instanceof Error ? e.message : "Unknown error" }), {
+    console.error(`[resolve-image] Exception: ${e instanceof Error ? e.message : e}`);
+    return new Response(JSON.stringify({ imageUrl: placeholderFor("?"), error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
