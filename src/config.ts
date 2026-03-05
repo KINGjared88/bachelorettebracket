@@ -45,15 +45,28 @@ export const CONFIG = {
   /**
    * Curated RSS feeds for Bachelorette / Bachelor Nation news.
    * These are fetched server-side via the rss-proxy edge function.
+   * Use tag/category-specific URLs so results are relevant.
    */
   RSS_FEEDS: [
-    { name: "Entertainment Tonight – TV", url: "https://www.etonline.com/tv/rss" },
     { name: "Entertainment Tonight – The Bachelorette", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
-    { name: "Us Weekly – Entertainment", url: "https://www.usmagazine.com/feed/" },
-    { name: "People Magazine", url: "https://people.com/feed/" },
-    { name: "E! News – TV", url: "https://www.eonline.com/syndication/feeds/rssfeeds/topstories.xml" },
-    { name: "Reality Tea", url: "https://www.realitytea.com/feed/" },
+    { name: "Us Weekly – Bachelor Nation", url: "https://www.usmagazine.com/entertainment/the-bachelor/feed/" },
+    { name: "People – The Bachelorette", url: "https://people.com/tag/the-bachelorette/feed/" },
+    { name: "E! News – The Bachelorette", url: "https://www.eonline.com/shows/the-bachelorette/rss" },
+    { name: "Reality Tea – Bachelor", url: "https://www.realitytea.com/category/the-bachelorette/feed/" },
+    { name: "Screen Rant – The Bachelor", url: "https://screenrant.com/tag/the-bachelorette/feed/" },
   ] as { name: string; url: string }[],
+
+  /** Keywords to filter news relevance (case-insensitive) */
+  NEWS_KEYWORDS: [
+    "bachelorette",
+    "bachelor",
+    "rose ceremony",
+    "final rose",
+    "fantasy suite",
+    "hometown date",
+    "taylor frankie paul",
+    "abc dating",
+  ] as string[],
 
   /** News cache duration in minutes */
   NEWS_CACHE_MINUTES: 30,

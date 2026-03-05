@@ -19,6 +19,12 @@ const cache = new Map<string, { items: FeedItem[]; ts: number }>();
 const CACHE_MS = 30 * 60 * 1000; // 30 minutes
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout per feed
 
+// Default keywords for relevance filtering
+const DEFAULT_KEYWORDS = [
+  "bachelorette", "bachelor", "rose ceremony", "final rose",
+  "fantasy suite", "hometown", "abc dating",
+];
+
 function parseRSS(xml: string, sourceName: string): FeedItem[] {
   const items: FeedItem[] = [];
 
@@ -94,13 +100,20 @@ function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   }).finally(() => clearTimeout(timer));
 }
 
+function isRelevant(item: FeedItem, keywords: string[]): boolean {
+  const text = `${item.title} ${item.summary}`.toLowerCase();
+  return keywords.some((kw) => text.includes(kw.toLowerCase()));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { feeds } = await req.json() as { feeds: { name: string; url: string }[] };
+    const body = await req.json() as { feeds: { name: string; url: string }[]; keywords?: string[] };
+    const { feeds, keywords } = body;
+    const filterKeywords = keywords && keywords.length > 0 ? keywords : DEFAULT_KEYWORDS;
 
     if (!feeds || !Array.isArray(feeds) || feeds.length === 0) {
       return new Response(JSON.stringify({ items: [], errors: ["No feeds provided"] }), {
@@ -139,9 +152,12 @@ Deno.serve(async (req) => {
       })
     );
 
+    // Filter for relevance
+    const relevant = allItems.filter((item) => isRelevant(item, filterKeywords));
+
     // Dedupe by URL then title
     const seen = new Set<string>();
-    const deduped = allItems.filter((item) => {
+    const deduped = relevant.filter((item) => {
       const key = item.url || item.title;
       if (!key || seen.has(key)) return false;
       seen.add(key);
