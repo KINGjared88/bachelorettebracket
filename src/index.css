@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 280 30% 16%;
+    --background: 280 25% 24%;
     --foreground: 210 40% 97%;
 
     --card: 275 25% 22%;
@@ -21,7 +21,7 @@
     --secondary: 25 95% 53%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 275 20% 26%;
+    --muted: 275 20% 30%;
     --muted-foreground: 215 20% 75%;
 
     --accent: 340 75% 55%;
@@ -30,8 +30,8 @@
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 275 20% 30%;
-    --input: 275 20% 28%;
+    --border: 275 20% 34%;
+    --input: 275 20% 32%;
     --ring: 263 70% 58%;
 
     --radius: 0.75rem;
@@ -71,7 +71,7 @@
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
 
-    --sidebar-background: 280 28% 15%;
+    --sidebar-background: 280 28% 22%;
     --sidebar-foreground: 210 30% 85%;
     --sidebar-primary: 263 70% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -107,12 +107,12 @@
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(270 50% 35% / 0.3) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 50% at 85% 75%, hsl(25 95% 55% / 0.12) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 50% at 50% 50%, hsl(340 65% 40% / 0.12) 0%, transparent 55%),
-      radial-gradient(circle 400px at 75% 10%, hsl(270 45% 40% / 0.2) 0%, transparent 40%),
-      radial-gradient(circle 300px at 20% 85%, hsl(340 60% 40% / 0.1) 0%, transparent 40%),
-      radial-gradient(ellipse 100% 80% at 50% 100%, hsl(280 30% 10% / 0.5) 0%, transparent 70%);
+      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(270 50% 35% / 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 85% 75%, hsl(25 95% 55% / 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 50% at 50% 50%, hsl(340 65% 40% / 0.15) 0%, transparent 55%),
+      radial-gradient(circle 400px at 75% 10%, hsl(270 45% 40% / 0.25) 0%, transparent 40%),
+      radial-gradient(circle 300px at 20% 85%, hsl(340 60% 40% / 0.14) 0%, transparent 40%),
+      radial-gradient(ellipse 100% 80% at 50% 100%, hsl(280 30% 14% / 0.5) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -303,7 +303,7 @@
 
   /* Nav bar */
   .nav-dark {
-    background: hsl(280 28% 18% / 0.95);
+    background: hsl(280 28% 22% / 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid hsl(275 20% 32% / 0.6);
