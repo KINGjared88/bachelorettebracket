@@ -61,21 +61,21 @@ export default function ExternalNewsPage() {
   const filteredNews = filter === "all" ? news.slice(1) : news.filter((item) => guessCategory(item.title, item.summary) === filter);
 
   return (
-    <div className="space-y-5 animate-slide-up">
+    <div className="space-y-5 animate-slide-up page-bg">
       {/* Header */}
       <div className="hero-gradient rounded-2xl p-6 text-primary-foreground relative overflow-hidden">
         <div className="absolute top-3 right-4 text-5xl opacity-10">🕵️</div>
-        <p className="text-xs font-bold uppercase tracking-widest opacity-70">Curated News</p>
+        <p className="text-xs font-bold uppercase tracking-widest opacity-60">Curated News</p>
         <h1 className="font-display text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2">
           <Rss className="w-7 h-7" /> Bachelor Intel
         </h1>
-        <p className="text-sm opacity-70 mt-1">Latest intel from curated Bachelorette sources</p>
+        <p className="text-sm opacity-60 mt-1">Latest intel from curated Bachelorette sources</p>
       </div>
 
       {feedErrors.length > 0 && (
         <div className="space-y-2">
           {feedErrors.map((err, i) => (
-            <div key={i} className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-center gap-2 text-sm">
+            <div key={i} className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex items-center gap-2 text-sm">
               <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
               <span className="text-destructive">{err}</span>
             </div>
@@ -104,7 +104,7 @@ export default function ExternalNewsPage() {
           <p className="font-display text-xl font-bold group-hover:opacity-90 transition-opacity">{featured.title}</p>
           {featured.summary && <p className="text-sm opacity-80 mt-2 line-clamp-2">{featured.summary}</p>}
           <div className="flex items-center gap-3 mt-3 text-xs opacity-70">
-            <span className="font-bold bg-primary-foreground/15 px-2 py-0.5 rounded-full">{featured.source}</span>
+            <span className="font-bold bg-primary-foreground/10 border border-primary-foreground/15 px-2 py-0.5 rounded-full">{featured.source}</span>
             {featured.publishDate && <span>{new Date(featured.publishDate).toLocaleDateString()}</span>}
             <ExternalLink className="w-3.5 h-3.5" />
           </div>
@@ -119,8 +119,8 @@ export default function ExternalNewsPage() {
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                filter === cat ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                filter === cat ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
               }`}
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -137,7 +137,7 @@ export default function ExternalNewsPage() {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block bg-card rounded-xl p-4 card-shadow hover-lift group"
+            className="block glass-card rounded-xl p-4 hover-lift group"
           >
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
