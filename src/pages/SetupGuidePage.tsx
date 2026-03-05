@@ -1,10 +1,18 @@
 import { CONFIG } from "@/config";
+import { Shield } from "lucide-react";
 
 export default function SetupGuidePage() {
   return (
     <div className="space-y-6 animate-slide-up max-w-3xl">
-      <h1 className="font-display text-2xl md:text-3xl font-bold">📋 Excel Setup Guide</h1>
-      <p className="text-muted-foreground">How to connect your Microsoft 365 Excel workbook to {CONFIG.SEASON_TITLE}</p>
+      {/* Header */}
+      <div className="hero-gradient rounded-2xl p-6 text-primary-foreground relative overflow-hidden">
+        <div className="absolute top-3 right-4 text-5xl opacity-10">⚙️</div>
+        <p className="text-xs font-bold uppercase tracking-widest opacity-70">Commissioner Only</p>
+        <h1 className="font-display text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2">
+          <Shield className="w-7 h-7" /> Admin Panel
+        </h1>
+        <p className="text-sm opacity-70 mt-1">Excel integration setup for {CONFIG.SEASON_TITLE}</p>
+      </div>
 
       <section className="bg-card rounded-xl p-5 card-shadow space-y-4">
         <h2 className="font-display text-lg font-bold">Step 1: Create Your Excel Workbook</h2>
