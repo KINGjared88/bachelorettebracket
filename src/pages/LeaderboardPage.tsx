@@ -20,25 +20,24 @@ export default function LeaderboardPage() {
   const finaleCountdown = getFinaleCountdown();
   const maxPoints = data.players[0]?.totalPoints || 1;
 
-  // Simple projected winner calculation based on current share of points
   const totalAllPoints = useMemo(() => data.players.reduce((s, p) => s + p.totalPoints, 0) || 1, [data.players]);
 
   return (
-    <div className="space-y-5 animate-slide-up">
+    <div className="space-y-5 animate-slide-up page-bg">
       <h1 className="font-display text-2xl md:text-3xl font-bold flex items-center gap-2">
         <Trophy className="w-7 h-7 text-secondary" /> Standings
       </h1>
 
       {/* Stat bar */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <div className="stat-card flex items-center gap-3">
+        <div className="glass-card rounded-xl p-4 flex items-center gap-3">
           <DollarSign className="w-5 h-5 text-secondary" />
           <div>
             <p className="text-lg font-bold font-display">${potTotal}</p>
             <p className="text-xs text-muted-foreground">Total Pot</p>
           </div>
         </div>
-        <div className="stat-card flex items-center gap-3">
+        <div className="glass-card rounded-xl p-4 flex items-center gap-3">
           <Trophy className="w-5 h-5 text-primary" />
           <div>
             <p className="text-lg font-bold font-display">{data.players.length}</p>
@@ -46,7 +45,7 @@ export default function LeaderboardPage() {
           </div>
         </div>
         {finaleCountdown && (
-          <div className="stat-card flex items-center gap-3 col-span-2 md:col-span-1">
+          <div className="glass-card rounded-xl p-4 flex items-center gap-3 col-span-2 md:col-span-1">
             <Clock className="w-5 h-5 text-accent" />
             <div>
               <p className="text-lg font-bold font-display">{finaleCountdown}</p>
@@ -79,9 +78,9 @@ export default function LeaderboardPage() {
             return (
               <div
                 key={player.id}
-                className={`relative p-4 rounded-xl bg-card card-shadow hover-lift ${rankClass} ${medalClass}`}
+                className={`relative p-4 rounded-xl glass-card hover-lift ${rankClass} ${medalClass}`}
                 style={{
-                  backgroundImage: `linear-gradient(90deg, hsl(270 60% 50% / ${Math.max(0.02, heatPct * 0.0015)}) 0%, transparent ${heatPct}%)`,
+                  backgroundImage: `linear-gradient(90deg, hsl(270 60% 50% / ${Math.max(0.02, heatPct * 0.001)}) 0%, transparent ${heatPct}%)`,
                 }}
               >
                 <div className="flex items-center gap-4">
@@ -97,17 +96,15 @@ export default function LeaderboardPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
-                    {/* Projected winner % */}
                     <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Target className="w-3.5 h-3.5" />
                       <span className="font-medium">{pct}%</span>
                     </div>
-                    {/* Weekly change */}
                     <div className="w-14 text-right">
                       {player.weeklyChange === undefined || player.weeklyChange === 0 ? (
                         <Minus className="w-4 h-4 text-muted-foreground inline" />
                       ) : player.weeklyChange > 0 ? (
-                        <span className="flex items-center justify-end gap-0.5 text-green-600 font-medium text-sm">
+                        <span className="flex items-center justify-end gap-0.5 text-green-500 font-medium text-sm">
                           <ArrowUp className="w-3.5 h-3.5 animate-bounce-arrow" />+{player.weeklyChange}
                         </span>
                       ) : (
@@ -116,7 +113,6 @@ export default function LeaderboardPage() {
                         </span>
                       )}
                     </div>
-                    {/* Points */}
                     <span className="font-display font-bold text-lg w-14 text-right">{player.totalPoints}</span>
                   </div>
                 </div>

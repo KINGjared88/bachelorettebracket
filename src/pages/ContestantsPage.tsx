@@ -8,22 +8,22 @@ function ContestantImage({ name, imageUrl, status }: { name: string; imageUrl?: 
 
   if (imageUrl && !imgError) {
     return (
-      <div className={`relative ${status === "eliminated" ? "glow-eliminated" : ""}`}>
+      <div className={`relative overflow-hidden ${status === "eliminated" ? "glow-eliminated" : ""}`}>
         <img
           src={imageUrl}
           alt={name}
-          className={`w-full aspect-[3/4] object-cover rounded-lg ${status === "eliminated" ? "grayscale brightness-75" : ""}`}
+          className={`w-full aspect-[3/4] object-cover rounded-lg transition-transform duration-300 group-hover:scale-105 ${status === "eliminated" ? "grayscale brightness-50" : ""}`}
           onError={() => setImgError(true)}
         />
         {status === "eliminated" && (
-          <div className="absolute inset-0 rounded-lg bg-destructive/10" />
+          <div className="absolute inset-0 rounded-lg bg-destructive/20 border border-destructive/30" />
         )}
       </div>
     );
   }
   return (
-    <div className={`w-full aspect-[3/4] rounded-lg bg-primary/10 flex items-center justify-center ${status === "eliminated" ? "bg-muted" : ""}`}>
-      <User className="w-10 h-10 text-primary" />
+    <div className={`w-full aspect-[3/4] rounded-lg bg-muted flex items-center justify-center ${status === "eliminated" ? "opacity-50" : ""}`}>
+      <User className="w-10 h-10 text-muted-foreground" />
     </div>
   );
 }
@@ -36,7 +36,6 @@ export default function ContestantsPage() {
   const { data } = useAppData();
   const [sortMode, setSortMode] = useState<SortMode>("all");
 
-  // Count how many players drafted each contestant
   const draftCounts = useMemo(() => {
     const counts: Record<string, Set<string>> = {};
     data.picks.forEach((p) => {
@@ -48,12 +47,9 @@ export default function ContestantsPage() {
 
   const maxDrafted = Math.max(...Object.values(draftCounts), 0);
 
-  // Points generated per contestant
   const pointsGenerated = useMemo(() => {
     const pts: Record<string, number> = {};
-    data.contestants.forEach((c) => {
-      pts[c.name] = c.totalRoses;
-    });
+    data.contestants.forEach((c) => { pts[c.name] = c.totalRoses; });
     return pts;
   }, [data.contestants]);
 
@@ -66,17 +62,14 @@ export default function ContestantsPage() {
   }, [data.contestants, sortMode, pointsGenerated]);
 
   return (
-    <div className="space-y-6 animate-slide-up">
+    <div className="space-y-6 animate-slide-up page-bg">
       <h1 className="font-display text-2xl md:text-3xl font-bold">🌹 The Men</h1>
       <p className="text-xs text-muted-foreground">{CONFIG.SEASON_TITLE}</p>
 
       {/* Lead hero card */}
       <div className="hero-gradient rounded-2xl overflow-hidden text-primary-foreground relative">
-        <div className="absolute inset-0 opacity-5">
-          <svg viewBox="0 0 400 200" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="1">
-            <line x1="30" y1="30" x2="80" y2="30" /><line x1="30" y1="70" x2="80" y2="70" />
-            <line x1="80" y1="30" x2="80" y2="70" /><line x1="80" y1="50" x2="130" y2="50" />
-          </svg>
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute top-1/2 right-10 -translate-y-1/2 text-[100px]">🌹</div>
         </div>
         <div className="flex flex-col sm:flex-row">
           <img
@@ -85,12 +78,12 @@ export default function ContestantsPage() {
             className="w-full sm:w-64 h-64 sm:h-auto object-cover object-top"
           />
           <div className="p-6 flex flex-col justify-center relative">
-            <p className="text-sm uppercase tracking-wider opacity-70 mb-1">Season Lead — The Bachelorette</p>
+            <p className="text-sm uppercase tracking-wider opacity-60 mb-1">Season Lead — The Bachelorette</p>
             <h2 className="font-display text-2xl md:text-3xl font-bold">{CONFIG.LEAD_NAME}</h2>
-            <p className="text-sm opacity-80 mt-2">Premieres {CONFIG.PREMIERE_DATE}</p>
+            <p className="text-sm opacity-70 mt-2">Premieres {CONFIG.PREMIERE_DATE}</p>
             <div className="flex gap-2 mt-3">
-              <span className="bg-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">{allContestants.length} Contestants</span>
-              <span className="bg-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">Season 22</span>
+              <span className="bg-primary-foreground/10 border border-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">{allContestants.length} Contestants</span>
+              <span className="bg-primary-foreground/10 border border-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">Season 22</span>
             </div>
           </div>
         </div>
@@ -103,10 +96,10 @@ export default function ContestantsPage() {
           <button
             key={mode}
             onClick={() => setSortMode(mode)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
               sortMode === mode
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
             }`}
           >
             {mode === "all" ? "All" : mode === "active" ? "Still In" : mode === "eliminated" ? "Eliminated" : "Most Points"}
@@ -123,8 +116,8 @@ export default function ContestantsPage() {
           return (
             <div
               key={c.name}
-              className={`bg-card rounded-xl overflow-hidden card-shadow hover-lift relative ${
-                c.status === "eliminated" ? "opacity-60" : ""
+              className={`group glass-card rounded-xl overflow-hidden hover-lift relative ${
+                c.status === "eliminated" ? "opacity-60 border-destructive/30" : ""
               }`}
             >
               {/* Rose counter badge */}

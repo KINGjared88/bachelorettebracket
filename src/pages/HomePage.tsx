@@ -64,10 +64,10 @@ function PowerRankings({ players }: { players: { name: string; totalPoints: numb
   const leader = players[0];
 
   const rankings = [
-    { emoji: "🔥", label: "Hottest Streak", value: hotStreak?.name || "—", sub: hotStreak?.weeklyChange ? `+${hotStreak.weeklyChange} pts` : "—", color: "border-secondary" },
-    { emoji: "📉", label: "Biggest Drop", value: bigDrop?.name || "—", sub: bigDrop?.weeklyChange ? `${bigDrop.weeklyChange} pts` : "—", color: "border-destructive" },
-    { emoji: "🌹", label: "Season Leader", value: leader?.name || "—", sub: leader ? `${leader.totalPoints} pts` : "—", color: "border-accent" },
-    { emoji: "💀", label: "On Life Support", value: players[players.length - 1]?.name || "—", sub: players[players.length - 1] ? `${players[players.length - 1].totalPoints} pts` : "—", color: "border-muted-foreground" },
+    { emoji: "🔥", label: "Hottest Streak", value: hotStreak?.name || "—", sub: hotStreak?.weeklyChange ? `+${hotStreak.weeklyChange} pts` : "—", borderColor: "border-secondary" },
+    { emoji: "📉", label: "Biggest Drop", value: bigDrop?.name || "—", sub: bigDrop?.weeklyChange ? `${bigDrop.weeklyChange} pts` : "—", borderColor: "border-destructive" },
+    { emoji: "🌹", label: "Season Leader", value: leader?.name || "—", sub: leader ? `${leader.totalPoints} pts` : "—", borderColor: "border-accent" },
+    { emoji: "💀", label: "On Life Support", value: players[players.length - 1]?.name || "—", sub: players[players.length - 1] ? `${players[players.length - 1].totalPoints} pts` : "—", borderColor: "border-muted-foreground" },
   ];
 
   return (
@@ -77,7 +77,7 @@ function PowerRankings({ players }: { players: { name: string; totalPoints: numb
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {rankings.map((r) => (
-          <div key={r.label} className={`stat-card border-l-4 ${r.color}`}>
+          <div key={r.label} className={`glass-card rounded-xl p-4 border-l-4 ${r.borderColor}`}>
             <div className="flex items-center gap-3">
               <span className="text-2xl">{r.emoji}</span>
               <div className="min-w-0">
@@ -94,7 +94,7 @@ function PowerRankings({ players }: { players: { name: string; totalPoints: numb
 }
 
 function PlayerSpotlight({ players }: { players: { name: string; totalPoints: number; topPick?: string; weeklyChange?: number }[] }) {
-  const spotlight = players[Math.floor(Date.now() / 604800000) % players.length]; // Rotates weekly
+  const spotlight = players[Math.floor(Date.now() / 604800000) % players.length];
   if (!spotlight) return null;
 
   return (
@@ -120,8 +120,8 @@ function PlayerSpotlight({ players }: { players: { name: string; totalPoints: nu
 
 function BracketDecoration() {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-card card-shadow p-6">
-      <div className="absolute inset-0 opacity-[0.06]">
+    <div className="relative overflow-hidden rounded-xl glass-card p-6">
+      <div className="absolute inset-0 opacity-[0.04]">
         <svg viewBox="0 0 400 200" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="1.5">
           <line x1="30" y1="30" x2="80" y2="30" /><line x1="30" y1="70" x2="80" y2="70" />
           <line x1="80" y1="30" x2="80" y2="70" /><line x1="80" y1="50" x2="130" y2="50" />
@@ -152,40 +152,47 @@ export default function HomePage() {
   const top3 = data.players.slice(0, 3);
 
   return (
-    <div className="space-y-6 animate-slide-up">
+    <div className="space-y-6 animate-slide-up page-bg">
       {/* Hero */}
       <div className="hero-gradient rounded-2xl p-6 md:p-10 text-primary-foreground relative overflow-hidden">
+        {/* Subtle rose silhouettes */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 text-[120px]">🌹</div>
+          <div className="absolute top-1/3 right-1/4 text-[80px]">🌹</div>
+        </div>
         <div className="absolute top-4 right-4 text-6xl opacity-10">🌹</div>
         <div className="absolute bottom-4 left-4 text-4xl opacity-10">🏀</div>
-        <p className="text-xs uppercase tracking-widest opacity-70 mb-1">GoodLeap Presents</p>
-        <h1 className="font-display text-2xl md:text-4xl font-bold mb-1">
-          Bracket HQ
-        </h1>
-        <p className="text-base md:text-lg font-medium opacity-90 mb-1">
-          {CONFIG.SEASON_TITLE}
-        </p>
-        <p className="text-sm opacity-70 mb-6">
-          Lead: {CONFIG.LEAD_NAME} · Premieres {new Date(CONFIG.PREMIERE_DATE + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-        </p>
+        <div className="relative">
+          <p className="text-xs uppercase tracking-widest opacity-60 mb-1">GoodLeap Presents</p>
+          <h1 className="font-display text-3xl md:text-5xl font-bold mb-1">
+            Bracket HQ
+          </h1>
+          <p className="text-lg md:text-xl font-medium opacity-90 mb-1">
+            {CONFIG.SEASON_TITLE}
+          </p>
+          <p className="text-sm opacity-60 mb-6">
+            Lead: {CONFIG.LEAD_NAME} · Premieres {new Date(CONFIG.PREMIERE_DATE + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift">
-            <DollarSign className="w-5 h-5 mb-1 opacity-70" />
-            <p className="text-2xl font-bold font-display">${potTotal}</p>
-            <p className="text-sm opacity-70">Total Pot</p>
-          </div>
-          <div className="bg-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift">
-            <Trophy className="w-5 h-5 mb-1 opacity-70" />
-            <p className="text-2xl font-bold font-display">{data.players.length}</p>
-            <p className="text-sm opacity-70">Players</p>
-          </div>
-          {nextEp && (
-            <div className="bg-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift col-span-2 md:col-span-1">
-              <Clock className="w-5 h-5 mb-1 opacity-70" />
-              <p className="text-2xl font-bold font-display">{formatCountdown(nextEp.date)}</p>
-              <p className="text-sm opacity-70">Next Episode</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift">
+              <DollarSign className="w-5 h-5 mb-1 opacity-70" />
+              <p className="text-2xl font-bold font-display">${potTotal}</p>
+              <p className="text-sm opacity-60">Total Pot</p>
             </div>
-          )}
+            <div className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift">
+              <Trophy className="w-5 h-5 mb-1 opacity-70" />
+              <p className="text-2xl font-bold font-display">{data.players.length}</p>
+              <p className="text-sm opacity-60">Players</p>
+            </div>
+            {nextEp && (
+              <div className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift col-span-2 md:col-span-1">
+                <Clock className="w-5 h-5 mb-1 opacity-70" />
+                <p className="text-2xl font-bold font-display">{formatCountdown(nextEp.date)}</p>
+                <p className="text-sm opacity-60">Next Episode</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -232,7 +239,7 @@ export default function HomePage() {
       {data.csvErrors && data.csvErrors.length > 0 && (
         <div className="space-y-2">
           {data.csvErrors.map((err, i) => (
-            <div key={i} className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 flex items-start gap-3">
+            <div key={i} className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-destructive">CSV Error</p>
@@ -244,7 +251,7 @@ export default function HomePage() {
       )}
 
       {data.error && !data.csvErrors?.length && (
-        <div className="bg-destructive/10 text-destructive rounded-lg p-4 text-sm">{data.error}</div>
+        <div className="bg-destructive/10 text-destructive rounded-lg p-4 text-sm border border-destructive/30">{data.error}</div>
       )}
 
       {/* Loading skeleton */}
@@ -272,8 +279,8 @@ export default function HomePage() {
             {top3.map((player, i) => (
               <div
                 key={player.id}
-                className={`flex items-center gap-4 p-4 rounded-xl card-shadow bg-card hover-lift ${
-                  i === 0 ? "rank-gold" : i === 1 ? "rank-silver" : "rank-bronze"
+                className={`flex items-center gap-4 p-4 rounded-xl glass-card hover-lift ${
+                  i === 0 ? "rank-gold animate-glow-pulse" : i === 1 ? "rank-silver" : "rank-bronze"
                 }`}
               >
                 <span className="text-2xl font-display font-bold w-8 text-center">
@@ -288,7 +295,7 @@ export default function HomePage() {
                 <div className="text-right">
                   <p className="text-lg font-bold font-display">{player.totalPoints}</p>
                   {player.weeklyChange !== undefined && player.weeklyChange !== 0 && (
-                    <span className={`flex items-center gap-0.5 text-xs font-medium ${player.weeklyChange > 0 ? "text-green-600" : "text-destructive"}`}>
+                    <span className={`flex items-center gap-0.5 text-xs font-medium ${player.weeklyChange > 0 ? "text-green-500" : "text-destructive"}`}>
                       {player.weeklyChange > 0 ? <ArrowUp className="w-3 h-3 animate-bounce-arrow" /> : <ArrowDown className="w-3 h-3 animate-bounce-arrow" />}
                       {Math.abs(player.weeklyChange)}
                     </span>

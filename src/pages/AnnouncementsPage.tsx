@@ -14,15 +14,15 @@ export default function AnnouncementsPage() {
     headline.toLowerCase().includes("lock");
 
   return (
-    <div className="space-y-5 animate-slide-up">
+    <div className="space-y-5 animate-slide-up page-bg">
       {/* Header */}
       <div className="hero-gradient rounded-2xl p-6 text-primary-foreground relative overflow-hidden">
         <div className="absolute top-3 right-4 text-5xl opacity-10">📣</div>
-        <p className="text-xs font-bold uppercase tracking-widest opacity-70">Official Updates</p>
+        <p className="text-xs font-bold uppercase tracking-widest opacity-60">Official Updates</p>
         <h1 className="font-display text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2">
           <Megaphone className="w-7 h-7" /> Commissioner's Desk
         </h1>
-        <p className="text-sm opacity-70 mt-1">All bracket pool updates and announcements</p>
+        <p className="text-sm opacity-60 mt-1">All bracket pool updates and announcements</p>
       </div>
 
       {sorted.length === 0 ? (

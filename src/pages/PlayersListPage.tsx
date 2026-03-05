@@ -6,7 +6,6 @@ import { useMemo } from "react";
 export default function PlayersListPage() {
   const { data } = useAppData();
 
-  // Compute per-player stats
   const playerStats = useMemo(() => {
     const stats: Record<string, { highestPick: string; highestPts: number; worstPick: string; worstPts: number; weeklyScores: number[] }> = {};
 
@@ -26,7 +25,6 @@ export default function PlayersListPage() {
         if (earned < worst.pts) worst = { name: p.contestantName, pts: earned };
       });
 
-      // Weekly breakdown
       const weekMap: Record<number, number> = {};
       data.results.forEach((r) => {
         if (r.receivedRose) {
@@ -45,7 +43,7 @@ export default function PlayersListPage() {
   }, [data]);
 
   return (
-    <div className="space-y-5 animate-slide-up">
+    <div className="space-y-5 animate-slide-up page-bg">
       <h1 className="font-display text-2xl md:text-3xl font-bold flex items-center gap-2">
         <BarChart3 className="w-7 h-7 text-secondary" /> The Bracket
       </h1>
@@ -62,11 +60,11 @@ export default function PlayersListPage() {
             <Link
               key={player.id}
               to={`/players/${player.id}`}
-              className={`block bg-card rounded-xl card-shadow hover-lift overflow-hidden ${rankClass}`}
+              className={`block glass-card rounded-xl hover-lift overflow-hidden ${rankClass}`}
             >
               <div className="p-4">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full hero-gradient flex items-center justify-center text-primary-foreground font-display font-bold text-sm shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-display font-bold text-sm shrink-0">
                     #{i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -78,17 +76,17 @@ export default function PlayersListPage() {
 
                 {/* Stat row */}
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-muted/50 rounded-lg p-2">
-                    <TrendingUp className="w-3.5 h-3.5 text-green-600 mx-auto mb-0.5" />
+                  <div className="bg-muted/30 border border-border rounded-lg p-2">
+                    <TrendingUp className="w-3.5 h-3.5 text-green-500 mx-auto mb-0.5" />
                     <p className="text-[10px] text-muted-foreground">Best Pick</p>
                     <p className="text-xs font-semibold truncate">{stat?.highestPick || "—"}</p>
                   </div>
-                  <div className="bg-muted/50 rounded-lg p-2">
+                  <div className="bg-muted/30 border border-border rounded-lg p-2">
                     <TrendingDown className="w-3.5 h-3.5 text-destructive mx-auto mb-0.5" />
                     <p className="text-[10px] text-muted-foreground">Worst Pick</p>
                     <p className="text-xs font-semibold truncate">{stat?.worstPick || "—"}</p>
                   </div>
-                  <div className="bg-muted/50 rounded-lg p-2">
+                  <div className="bg-muted/30 border border-border rounded-lg p-2">
                     <Target className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
                     <p className="text-[10px] text-muted-foreground">Top Pick Pts</p>
                     <p className="text-xs font-semibold">{stat?.highestPts || 0}</p>
@@ -101,7 +99,7 @@ export default function PlayersListPage() {
                     {weeklyScores.map((score, wi) => (
                       <div
                         key={wi}
-                        className="flex-1 bg-primary/20 rounded-t-sm min-w-1 transition-all"
+                        className="flex-1 bg-primary/30 rounded-t-sm min-w-1 transition-all"
                         style={{ height: `${Math.max(10, (score / maxWeekly) * 100)}%` }}
                         title={`Week ${wi + 1}: ${score} pts`}
                       />
