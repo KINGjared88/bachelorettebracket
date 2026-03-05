@@ -1,6 +1,6 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { Clock, Users, Skull, Flame } from "lucide-react";
+import { Clock, Users, Skull, Flame, Trophy, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 
 function getNextEpisode(): { date: Date; label: string } | null {
@@ -85,6 +85,34 @@ export function WarRoomSidebar() {
           </div>
         </div>
       </div>
+
+      {/* Top 3 Rankings */}
+      {data.players.length > 0 && (
+        <div className="glass-card rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Trophy className="w-4 h-4 text-secondary" />
+            <span className="text-xs font-bold uppercase tracking-widest text-secondary font-body">Top 3</span>
+          </div>
+          <div className="space-y-2">
+            {data.players.slice(0, 3).map((player, i) => (
+              <div key={player.id} className="flex items-center gap-2">
+                <span className="text-base">{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold truncate text-foreground">{player.name}</p>
+                </div>
+                <div className="text-right flex items-center gap-1">
+                  <span className="font-mono text-sm font-bold text-foreground">{player.totalPoints}</span>
+                  {player.weeklyChange !== undefined && player.weeklyChange !== 0 && (
+                    <span className={`flex items-center text-[10px] font-semibold ${player.weeklyChange > 0 ? "text-green-500" : "text-destructive"}`}>
+                      {player.weeklyChange > 0 ? <ArrowUp className="w-2.5 h-2.5" /> : <ArrowDown className="w-2.5 h-2.5" />}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Draft Exposure */}
       {draftExposure.length > 0 && (

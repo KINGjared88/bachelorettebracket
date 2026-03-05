@@ -1,6 +1,6 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { User, MapPin, Briefcase, Filter, Flame, Users } from "lucide-react";
+import { User, MapPin, Briefcase, Filter, Users } from "lucide-react";
 import { useState, useMemo } from "react";
 
 function ContestantImage({ name, imageUrl, status }: { name: string; imageUrl?: string; status: string }) {
@@ -51,7 +51,7 @@ export default function ContestantsPage() {
     return Object.fromEntries(Object.entries(counts).map(([k, v]) => [k, v.size]));
   }, [data.picks]);
 
-  const maxDrafted = Math.max(...Object.values(draftCounts), 0);
+
 
   const pointsGenerated = useMemo(() => {
     const pts: Record<string, number> = {};
@@ -114,7 +114,7 @@ export default function ContestantsPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {allContestants.map((c) => {
           const drafted = draftCounts[c.name] || 0;
-          const isMostDrafted = drafted === maxDrafted && maxDrafted > 0;
+          
 
           return (
             <div
@@ -132,12 +132,6 @@ export default function ContestantsPage() {
               {c.totalRoses > 0 && (
                 <div className="absolute top-2 right-2 z-10 rose-badge">
                   🌹 {c.totalRoses}
-                </div>
-              )}
-              {/* Most drafted badge */}
-              {isMostDrafted && (
-                <div className="absolute top-2 left-2 z-10 fire-badge">
-                  <Flame className="w-3 h-3" /> Hot
                 </div>
               )}
 
