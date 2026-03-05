@@ -54,12 +54,11 @@ function generateDemoData(): AppData {
     });
   });
 
-  const eliminated = new Set(DEMO_CONTESTANTS.slice(16));
   const contestants: Contestant[] = REAL_CAST.map((c) => ({
     name: c.name,
-    status: eliminated.has(c.name) ? "eliminated" : "active",
-    rosesThisWeek: eliminated.has(c.name) ? 0 : Math.floor(Math.random() * 3),
-    totalRoses: Math.floor(Math.random() * 8) + 1,
+    status: "active" as const,
+    rosesThisWeek: 0,
+    totalRoses: 0,
     isLead: false,
     imageUrl: c.imageUrl,
     age: c.age,
