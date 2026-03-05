@@ -31,6 +31,9 @@ export interface Contestant {
   eliminatedWeek?: number;
   imageUrl?: string;
   isLead?: boolean;
+  age?: number;
+  occupation?: string;
+  hometown?: string;
 }
 
 export interface Announcement {
