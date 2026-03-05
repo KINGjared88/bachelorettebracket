@@ -72,16 +72,7 @@ export default function ExternalNewsPage() {
         <p className="text-sm opacity-60 mt-1">Latest intel from curated Bachelorette sources</p>
       </div>
 
-      {feedErrors.length > 0 && (
-        <div className="space-y-2">
-          {feedErrors.map((err, i) => (
-            <div key={i} className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 flex items-center gap-2 text-sm">
-              <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
-              <span className="text-destructive">{err}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Feed errors logged to console only */}
 
       {loading && (
         <div className="flex items-center justify-center py-12 gap-2 text-muted-foreground">

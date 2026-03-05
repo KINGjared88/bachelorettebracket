@@ -134,12 +134,6 @@ export default function ContestantsPage() {
                   🌹 {c.totalRoses}
                 </div>
               )}
-              {/* Most drafted badge */}
-              {isMostDrafted && (
-                <div className="absolute top-2 left-2 z-10 fire-badge">
-                  <Flame className="w-3 h-3" /> Hot
-                </div>
-              )}
 
               <ContestantImage name={c.name} imageUrl={c.imageUrl} status={c.status} />
               <div className="px-3 pb-3 pt-2 text-center">

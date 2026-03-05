@@ -99,10 +99,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Power Rankings Podium */}
-      {!data.loading && data.players.length > 0 && (
-        <PowerRankingsPodium players={data.players} />
-      )}
 
       {/* Quick Stats */}
       {!data.loading && data.players.length > 0 && (
