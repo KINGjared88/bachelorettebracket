@@ -35,43 +35,6 @@ function WeeklyHeadlineBanner({ announcements }: { announcements: { headline: st
   );
 }
 
-function PowerRankingsPodium({ players }: { players: { id: string; name: string; totalPoints: number; weeklyChange?: number; topPick?: string }[] }) {
-  const top3 = players.slice(0, 3);
-  if (top3.length === 0) return null;
-
-  const podiumOrder = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
-  const podiumClasses = top3.length >= 3
-    ? ["podium-second", "podium-first", "podium-third"]
-    : top3.length === 2
-    ? ["podium-first", "podium-second"]
-    : ["podium-first"];
-  const podiumHeights = top3.length >= 3 ? ["h-28", "h-36", "h-24"] : ["h-36", "h-28"];
-  const medals = top3.length >= 3 ? ["🥈", "🥇", "🥉"] : top3.length === 2 ? ["🥇", "🥈"] : ["🥇"];
-
-  return (
-    <div className="glass-card rounded-2xl p-6">
-      <h2 className="font-display text-xl font-bold flex items-center gap-2 mb-6">
-        <Trophy className="w-5 h-5 text-secondary" /> Power Rankings
-      </h2>
-      <div className="flex items-end justify-center gap-3">
-        {podiumOrder.map((player, i) => (
-          <div key={player.id} className="flex flex-col items-center flex-1 max-w-[160px]">
-            <span className="text-3xl mb-2">{medals[i]}</span>
-            <p className="font-display font-bold text-sm text-center truncate w-full">{player.name}</p>
-            <p className="font-mono text-lg font-bold text-primary">{player.totalPoints}</p>
-            {player.weeklyChange !== undefined && player.weeklyChange !== 0 && (
-              <span className={`flex items-center gap-0.5 text-xs font-semibold mt-0.5 ${player.weeklyChange > 0 ? "text-green-500" : "text-destructive"}`}>
-                {player.weeklyChange > 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                {Math.abs(player.weeklyChange)}
-              </span>
-            )}
-            <div className={`w-full ${podiumClasses[i]} rounded-t-lg mt-2 ${podiumHeights[i]}`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function QuickStats({ players }: { players: { name: string; totalPoints: number; weeklyChange?: number }[] }) {
   const hotStreak = [...players].sort((a, b) => (b.weeklyChange || 0) - (a.weeklyChange || 0))[0];
