@@ -31,10 +31,10 @@ export function AppNav() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-all duration-200 ${
                 active
-                  ? "bg-primary/20 text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "bg-primary/25 text-primary-foreground shadow-sm shadow-primary/20"
+                  : "text-foreground/80 hover:text-foreground hover:bg-muted/60"
               }`}
             >
               <item.icon className="w-4 h-4" />
