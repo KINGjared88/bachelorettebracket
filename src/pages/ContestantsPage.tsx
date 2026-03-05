@@ -8,22 +8,28 @@ function ContestantImage({ name, imageUrl, status }: { name: string; imageUrl?: 
 
   if (imageUrl && !imgError) {
     return (
-      <div className={`relative overflow-hidden ${status === "eliminated" ? "glow-eliminated" : ""}`}>
+      <div className="relative overflow-hidden">
         <img
           src={imageUrl}
           alt={name}
-          className={`w-full aspect-[3/4] object-cover rounded-lg transition-transform duration-300 group-hover:scale-105 ${status === "eliminated" ? "grayscale brightness-50" : ""}`}
+          className={`w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:scale-110 ${
+            status === "eliminated" ? "grayscale brightness-50" : ""
+          }`}
           onError={() => setImgError(true)}
         />
-        {status === "eliminated" && (
-          <div className="absolute inset-0 rounded-lg bg-destructive/20 border border-destructive/30" />
+        {/* Rose overlay for active */}
+        {status === "active" && (
+          <div className="rose-overlay">🌹</div>
         )}
       </div>
     );
   }
   return (
-    <div className={`w-full aspect-[3/4] rounded-lg bg-muted flex items-center justify-center ${status === "eliminated" ? "opacity-50" : ""}`}>
+    <div className={`w-full aspect-[3/4] bg-muted flex items-center justify-center relative ${status === "eliminated" ? "opacity-40" : ""}`}>
       <User className="w-10 h-10 text-muted-foreground" />
+      {status === "active" && (
+        <div className="rose-overlay">🌹</div>
+      )}
     </div>
   );
 }
@@ -63,14 +69,11 @@ export default function ContestantsPage() {
 
   return (
     <div className="space-y-6 animate-slide-up page-bg">
-      <h1 className="font-display text-2xl md:text-3xl font-bold">🌹 The Men</h1>
-      <p className="text-xs text-muted-foreground">{CONFIG.SEASON_TITLE}</p>
+      <h1 className="font-display text-2xl md:text-3xl font-bold">The Men</h1>
+      <p className="text-xs text-muted-foreground font-body">{CONFIG.SEASON_TITLE}</p>
 
       {/* Lead hero card */}
       <div className="hero-gradient rounded-2xl overflow-hidden text-primary-foreground relative">
-        <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute top-1/2 right-10 -translate-y-1/2 text-[100px]">🌹</div>
-        </div>
         <div className="flex flex-col sm:flex-row">
           <img
             src={LEAD_IMAGE}
@@ -78,12 +81,12 @@ export default function ContestantsPage() {
             className="w-full sm:w-64 h-64 sm:h-auto object-cover object-top"
           />
           <div className="p-6 flex flex-col justify-center relative">
-            <p className="text-sm uppercase tracking-wider opacity-60 mb-1">Season Lead — The Bachelorette</p>
+            <p className="text-sm uppercase tracking-wider opacity-50 mb-1 font-body">Season Lead — The Bachelorette</p>
             <h2 className="font-display text-2xl md:text-3xl font-bold">{CONFIG.LEAD_NAME}</h2>
-            <p className="text-sm opacity-70 mt-2">Premieres {CONFIG.PREMIERE_DATE}</p>
+            <p className="text-sm opacity-60 mt-2 font-body">Premieres {CONFIG.PREMIERE_DATE}</p>
             <div className="flex gap-2 mt-3">
-              <span className="bg-primary-foreground/10 border border-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">{allContestants.length} Contestants</span>
-              <span className="bg-primary-foreground/10 border border-primary-foreground/15 rounded-full px-3 py-1 text-xs font-medium">Season 22</span>
+              <span className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-full px-3 py-1 text-xs font-medium font-body">{allContestants.length} Contestants</span>
+              <span className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-full px-3 py-1 text-xs font-medium font-body">Season 22</span>
             </div>
           </div>
         </div>
@@ -96,10 +99,10 @@ export default function ContestantsPage() {
           <button
             key={mode}
             onClick={() => setSortMode(mode)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border font-body ${
               sortMode === mode
                 ? "bg-primary text-primary-foreground border-primary"
-                : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                : "bg-muted/30 text-muted-foreground border-border hover:bg-muted/50"
             }`}
           >
             {mode === "all" ? "All" : mode === "active" ? "Still In" : mode === "eliminated" ? "Eliminated" : "Most Points"}
@@ -107,7 +110,7 @@ export default function ContestantsPage() {
         ))}
       </div>
 
-      {/* Contestant grid */}
+      {/* Scouting Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {allContestants.map((c) => {
           const drafted = draftCounts[c.name] || 0;
@@ -116,10 +119,15 @@ export default function ContestantsPage() {
           return (
             <div
               key={c.name}
-              className={`group glass-card rounded-xl overflow-hidden hover-lift relative ${
-                c.status === "eliminated" ? "opacity-60 border-destructive/30" : ""
+              className={`group scouting-card glass-card rounded-xl overflow-hidden relative ${
+                c.status === "eliminated" ? "opacity-70" : ""
               }`}
             >
+              {/* Eliminated sash */}
+              {c.status === "eliminated" && (
+                <div className="eliminated-sash">Eliminated</div>
+              )}
+
               {/* Rose counter badge */}
               {c.totalRoses > 0 && (
                 <div className="absolute top-2 right-2 z-10 rose-badge">
@@ -137,22 +145,19 @@ export default function ContestantsPage() {
               <div className="px-3 pb-3 pt-2 text-center">
                 <p className="font-semibold text-sm truncate">{c.name}{c.age ? `, ${c.age}` : ""}</p>
                 {c.occupation && (
-                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5 font-body">
                     <Briefcase className="w-3 h-3 shrink-0" /> <span className="truncate">{c.occupation}</span>
                   </p>
                 )}
                 {c.hometown && (
-                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5 font-body">
                     <MapPin className="w-3 h-3 shrink-0" /> <span className="truncate">{c.hometown}</span>
                   </p>
                 )}
                 {drafted > 0 && (
-                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1 font-body">
                     <Users className="w-3 h-3" /> {drafted} player{drafted !== 1 ? "s" : ""}
                   </p>
-                )}
-                {c.status === "eliminated" && (
-                  <span className="status-eliminated mt-1">Eliminated</span>
                 )}
               </div>
             </div>
