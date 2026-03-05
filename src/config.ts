@@ -42,18 +42,18 @@ export const CONFIG = {
    */
   SINGLE_CSV_URL: "",
 
-  /** RSS feed sources with names */
+  /**
+   * Default curated RSS feeds for Bachelorette news.
+   * These are fetched server-side via the rss-proxy edge function.
+   */
   RSS_FEEDS: [
-    // { name: "Official ABC", url: "https://..." },
-    // { name: "People Magazine", url: "https://..." },
+    { name: "Entertainment Tonight – TV", url: "https://www.etonline.com/tv/rss" },
+    { name: "Entertainment Tonight – The Bachelorette", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
   ] as { name: string; url: string }[],
 
   /** News cache duration in minutes */
   NEWS_CACHE_MINUTES: 30,
 
   /** Image cache refresh interval in days */
-  IMAGE_CACHE_DAYS: 7,
-
-  /** RSS proxy endpoint (set to your serverless proxy URL) */
-  RSS_PROXY_URL: "",
+  IMAGE_CACHE_DAYS: 30,
 } as const;
