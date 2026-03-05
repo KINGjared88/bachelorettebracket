@@ -35,7 +35,7 @@ function generateDemoData(): AppData {
   });
 
   const eliminated = new Set(DEMO_CONTESTANTS.slice(10));
-  const contestants: Contestant[] = DEMO_CONTESTANTS.map((name, i) => ({
+  const contestants: Contestant[] = DEMO_CONTESTANTS.map((name) => ({
     name,
     status: eliminated.has(name) ? "eliminated" : "active",
     rosesThisWeek: eliminated.has(name) ? 0 : Math.floor(Math.random() * 3),
@@ -60,17 +60,17 @@ function generateDemoData(): AppData {
 
   const announcements: Announcement[] = [
     {
-      date: "2025-03-10",
-      headline: "Welcome to Bachelor Bracket HQ! 🌹",
+      date: "2026-03-22",
+      headline: "Welcome to The Bachelorette Bracket HQ! 🌹",
       body: "The bracket pool is officially open. All picks are locked after Episode 3. Good luck!",
     },
     {
-      date: "2025-03-17",
+      date: "2026-03-29",
       headline: "Week 2 Results Are In",
       body: "Some shakeups on the leaderboard this week. Check out who's climbing!",
     },
     {
-      date: "2025-03-24",
+      date: "2026-04-05",
       headline: "Picks are now LOCKED 🔒",
       body: "Episode 3 has aired. All rankings are final for the rest of the season.",
     },
@@ -85,6 +85,7 @@ function generateDemoData(): AppData {
     lastUpdated: new Date(),
     loading: false,
     error: null,
+    csvErrors: [],
   };
 }
 
@@ -94,7 +95,7 @@ function parsePlayersCSV(rows: Record<string, string>[]): Player[] {
   return rows.map((r, i) => ({
     id: r.id || `p${i}`,
     name: r.name || r.player_name || "",
-    totalPoints: 0, // computed later
+    totalPoints: 0,
     weeklyChange: r.weekly_change ? parseInt(r.weekly_change) : undefined,
     topPick: r.top_pick || r["#1_pick"] || undefined,
   }));
@@ -117,6 +118,7 @@ function parseResultsCSV(rows: Record<string, string>[]): WeeklyResult[] {
     receivedRose: r.received_rose === "true" || r.received_rose === "1" || r.rose === "true" || r.rose === "1",
     eliminated: r.eliminated === "true" || r.eliminated === "1",
     rosesThisWeek: parseInt(r.roses_this_week || r.roses || "0"),
+    imageUrl: r.image_url || undefined,
   }));
 }
 
@@ -130,7 +132,6 @@ function parseAnnouncementsCSV(rows: Record<string, string>[]): Announcement[] {
 }
 
 function computeScores(players: Player[], picks: Pick[], results: WeeklyResult[]): Player[] {
-  // Build rose totals per contestant
   const roseMap: Record<string, number> = {};
   results.forEach((r) => {
     if (r.receivedRose) {
@@ -138,23 +139,15 @@ function computeScores(players: Player[], picks: Pick[], results: WeeklyResult[]
     }
   });
 
-  // Compute player totals
   const playerTotals: Record<string, number> = {};
-  const playerTopPick: Record<string, string> = {};
 
   picks.forEach((pick) => {
     const key = pick.playerId || pick.playerName;
     const roses = roseMap[pick.contestantName] || 0;
     const earned = pick.rankPoints * roses;
     playerTotals[key] = (playerTotals[key] || 0) + earned;
-
-    // Track top pick (highest rank points)
-    if (!playerTopPick[key]) {
-      playerTopPick[key] = pick.contestantName;
-    }
   });
 
-  // Find top pick per player (highest rank_points)
   const topPicks: Record<string, { name: string; pts: number }> = {};
   picks.forEach((pick) => {
     const key = pick.playerId || pick.playerName;
@@ -173,7 +166,7 @@ function computeScores(players: Player[], picks: Pick[], results: WeeklyResult[]
   }).sort((a, b) => b.totalPoints - a.totalPoints);
 }
 
-function buildContestants(results: WeeklyResult[]): Contestant[] {
+function buildContestants(results: WeeklyResult[], imageUrls?: Record<string, string>): Contestant[] {
   const map: Record<string, Contestant> = {};
   results.forEach((r) => {
     if (!map[r.contestantName]) {
@@ -182,6 +175,7 @@ function buildContestants(results: WeeklyResult[]): Contestant[] {
         status: "active",
         rosesThisWeek: 0,
         totalRoses: 0,
+        imageUrl: imageUrls?.[r.contestantName] || (r as any).imageUrl || undefined,
       };
     }
     const c = map[r.contestantName];
@@ -190,7 +184,6 @@ function buildContestants(results: WeeklyResult[]): Contestant[] {
       c.eliminatedWeek = r.week;
     }
     c.totalRoses += r.rosesThisWeek;
-    // Keep the latest week's roses
     if (!c.eliminatedWeek || r.week >= c.eliminatedWeek) {
       c.rosesThisWeek = r.rosesThisWeek;
     }
@@ -204,38 +197,65 @@ export async function loadAppData(): Promise<AppData> {
   const hasSingle = CONFIG.SINGLE_CSV_URL.length > 0;
 
   if (!hasEndpoints && !hasSingle) {
-    // No data configured — return demo data
     return generateDemoData();
   }
+
+  const csvErrors: string[] = [];
 
   try {
     let players: Player[] = [];
     let picks: Pick[] = [];
     let results: WeeklyResult[] = [];
     let announcements: Announcement[] = [];
+    let latestModified: Date | null = null;
 
     if (hasEndpoints) {
-      const [pRows, pickRows, resRows, annRows] = await Promise.all([
+      const [pRes, pickRes, resRes, annRes] = await Promise.all([
         fetchCSV(endpoints.players_csv_url),
         fetchCSV(endpoints.picks_csv_url),
         fetchCSV(endpoints.results_csv_url),
         fetchCSV(endpoints.announcements_csv_url),
       ]);
 
-      players = parsePlayersCSV(pRows);
-      picks = parsePicksCSV(pickRows);
-      results = parseResultsCSV(resRows);
-      announcements = parseAnnouncementsCSV(annRows);
+      // Collect errors
+      if (pRes.error) csvErrors.push(`Players CSV: ${pRes.error}`);
+      if (pickRes.error) csvErrors.push(`Picks CSV: ${pickRes.error}`);
+      if (resRes.error) csvErrors.push(`Results CSV: ${resRes.error}`);
+      if (annRes.error) csvErrors.push(`Announcements CSV: ${annRes.error}`);
+
+      // Track latest modified
+      [pRes, pickRes, resRes, annRes].forEach((r) => {
+        if (r.lastModified && (!latestModified || r.lastModified > latestModified)) {
+          latestModified = r.lastModified;
+        }
+      });
+
+      players = parsePlayersCSV(pRes.data);
+      picks = parsePicksCSV(pickRes.data);
+      results = parseResultsCSV(resRes.data);
+      announcements = parseAnnouncementsCSV(annRes.data);
     } else if (hasSingle) {
-      const rows = await fetchCSV(CONFIG.SINGLE_CSV_URL);
+      const singleRes = await fetchCSV(CONFIG.SINGLE_CSV_URL);
+      if (singleRes.error) csvErrors.push(`Master CSV: ${singleRes.error}`);
+      if (singleRes.lastModified) latestModified = singleRes.lastModified;
+
+      const rows = singleRes.data;
       players = parsePlayersCSV(rows.filter((r) => r.type === "player"));
       picks = parsePicksCSV(rows.filter((r) => r.type === "pick"));
       results = parseResultsCSV(rows.filter((r) => r.type === "result"));
       announcements = parseAnnouncementsCSV(rows.filter((r) => r.type === "announcement"));
     }
 
+    // Extract image_url from results rows for contestants
+    const imageUrls: Record<string, string> = {};
+    results.forEach((r) => {
+      if ((r as any).imageUrl) {
+        imageUrls[r.contestantName] = (r as any).imageUrl;
+      }
+    });
+
     const scoredPlayers = computeScores(players, picks, results);
-    const contestants = buildContestants(results);
+    const contestants = buildContestants(results, imageUrls);
 
     return {
       players: scoredPlayers,
@@ -243,9 +263,10 @@ export async function loadAppData(): Promise<AppData> {
       results,
       contestants,
       announcements,
-      lastUpdated: new Date(),
+      lastUpdated: latestModified || new Date(),
       loading: false,
-      error: null,
+      error: csvErrors.length > 0 ? csvErrors.join("; ") : null,
+      csvErrors,
     };
   } catch (err) {
     return {
@@ -257,6 +278,7 @@ export async function loadAppData(): Promise<AppData> {
       lastUpdated: null,
       loading: false,
       error: err instanceof Error ? err.message : "Failed to load data",
+      csvErrors: [err instanceof Error ? err.message : "Unknown error"],
     };
   }
 }
