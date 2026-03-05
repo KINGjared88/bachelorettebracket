@@ -6,14 +6,14 @@
 
 @layer base {
   :root {
-    --background: 250 40% 13%;
-    --foreground: 210 40% 96%;
+    --background: 280 30% 16%;
+    --foreground: 210 40% 97%;
 
-    --card: 255 30% 18%;
-    --card-foreground: 210 40% 96%;
+    --card: 275 25% 22%;
+    --card-foreground: 210 40% 97%;
 
-    --popover: 255 30% 18%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 275 25% 22%;
+    --popover-foreground: 210 40% 97%;
 
     --primary: 263 70% 58%;
     --primary-foreground: 0 0% 100%;
@@ -21,8 +21,8 @@
     --secondary: 25 95% 53%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 255 20% 24%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 275 20% 26%;
+    --muted-foreground: 215 20% 75%;
 
     --accent: 340 75% 55%;
     --accent-foreground: 0 0% 100%;
@@ -30,8 +30,8 @@
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 255 20% 28%;
-    --input: 255 20% 26%;
+    --border: 275 20% 30%;
+    --input: 275 20% 28%;
     --ring: 263 70% 58%;
 
     --radius: 0.75rem;
@@ -41,43 +41,43 @@
     --bronze: 30 50% 45%;
 
     --rose-pink: 340 75% 55%;
-    --rose-pink-light: 340 40% 24%;
+    --rose-pink-light: 340 40% 26%;
 
     --fire: 15 90% 55%;
-    --fire-light: 15 50% 22%;
+    --fire-light: 15 50% 24%;
 
     --elimination-red: 0 72% 50%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(263 55% 28%), hsl(280 40% 18%), hsl(250 40% 14%));
-    --gradient-accent: linear-gradient(135deg, hsl(263 60% 40%), hsl(25 90% 48%));
-    --gradient-card-hover: linear-gradient(135deg, hsl(263 70% 55% / 0.1), hsl(25 95% 55% / 0.08));
-    --gradient-section-alt: linear-gradient(180deg, hsl(255 30% 17%), hsl(250 35% 15%));
-    --gradient-heatmap-hot: linear-gradient(90deg, hsl(263 70% 55% / 0.15), hsl(25 95% 55% / 0.18));
-    --gradient-heatmap-cold: linear-gradient(90deg, hsl(250 40% 14%), hsl(255 30% 16%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 45% 28%), hsl(280 35% 22%), hsl(275 30% 17%));
+    --gradient-accent: linear-gradient(135deg, hsl(263 60% 45%), hsl(25 90% 50%));
+    --gradient-card-hover: linear-gradient(135deg, hsl(263 70% 55% / 0.12), hsl(25 95% 55% / 0.1));
+    --gradient-section-alt: linear-gradient(180deg, hsl(275 25% 21%), hsl(280 28% 18%));
+    --gradient-heatmap-hot: linear-gradient(90deg, hsl(263 70% 55% / 0.18), hsl(25 95% 55% / 0.2));
+    --gradient-heatmap-cold: linear-gradient(90deg, hsl(280 30% 16%), hsl(275 25% 19%));
 
-    --shadow-card: 0 4px 24px hsl(260 50% 5% / 0.5);
-    --shadow-card-hover: 0 12px 48px hsl(260 50% 5% / 0.6), 0 0 20px hsl(263 70% 55% / 0.1);
-    --shadow-hero: 0 24px 64px hsl(263 60% 20% / 0.4);
+    --shadow-card: 0 4px 24px hsl(280 40% 8% / 0.5);
+    --shadow-card-hover: 0 12px 48px hsl(280 40% 8% / 0.6), 0 0 20px hsl(263 70% 55% / 0.15);
+    --shadow-hero: 0 24px 64px hsl(270 50% 20% / 0.4);
     --shadow-glow-orange: 0 0 30px hsl(25 95% 55% / 0.25), 0 0 60px hsl(25 95% 55% / 0.1);
-    --shadow-glow-purple: 0 0 30px hsl(263 70% 58% / 0.2), 0 0 60px hsl(263 70% 58% / 0.08);
+    --shadow-glow-purple: 0 0 30px hsl(263 70% 58% / 0.25), 0 0 60px hsl(263 70% 58% / 0.1);
     --shadow-glow-eliminated: 0 0 24px hsl(0 72% 50% / 0.3);
-    --shadow-glow-gold: 0 0 24px hsl(45 90% 50% / 0.25), 0 0 48px hsl(45 90% 50% / 0.1);
-    --shadow-glow-silver: 0 0 20px hsl(210 10% 70% / 0.2);
-    --shadow-glow-bronze: 0 0 20px hsl(30 50% 45% / 0.2);
+    --shadow-glow-gold: 0 0 24px hsl(45 90% 50% / 0.3), 0 0 48px hsl(45 90% 50% / 0.12);
+    --shadow-glow-silver: 0 0 20px hsl(210 10% 70% / 0.25);
+    --shadow-glow-bronze: 0 0 20px hsl(30 50% 45% / 0.25);
 
-    --glass-bg: hsl(255 25% 22% / 0.75);
-    --glass-border: hsl(255 20% 38% / 0.5);
+    --glass-bg: hsl(275 20% 24% / 0.85);
+    --glass-border: hsl(275 15% 35% / 0.6);
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
 
-    --sidebar-background: 250 35% 14%;
-    --sidebar-foreground: 210 30% 82%;
+    --sidebar-background: 280 28% 15%;
+    --sidebar-foreground: 210 30% 85%;
     --sidebar-primary: 263 70% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 255 20% 22%;
-    --sidebar-accent-foreground: 210 40% 92%;
-    --sidebar-border: 255 20% 28%;
+    --sidebar-accent: 275 20% 24%;
+    --sidebar-accent-foreground: 210 40% 93%;
+    --sidebar-border: 275 20% 30%;
     --sidebar-ring: 263 70% 58%;
   }
 }
@@ -107,12 +107,12 @@
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(263 60% 35% / 0.2) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 50% at 85% 75%, hsl(25 95% 55% / 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 50% at 50% 50%, hsl(340 70% 45% / 0.07) 0%, transparent 55%),
-      radial-gradient(circle 400px at 75% 10%, hsl(263 50% 45% / 0.15) 0%, transparent 40%),
-      radial-gradient(circle 300px at 20% 85%, hsl(25 80% 50% / 0.08) 0%, transparent 40%),
-      radial-gradient(ellipse 100% 80% at 50% 100%, hsl(250 40% 8% / 0.6) 0%, transparent 70%);
+      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(270 50% 35% / 0.3) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 85% 75%, hsl(25 95% 55% / 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 50% at 50% 50%, hsl(340 65% 40% / 0.12) 0%, transparent 55%),
+      radial-gradient(circle 400px at 75% 10%, hsl(270 45% 40% / 0.2) 0%, transparent 40%),
+      radial-gradient(circle 300px at 20% 85%, hsl(340 60% 40% / 0.1) 0%, transparent 40%),
+      radial-gradient(ellipse 100% 80% at 50% 100%, hsl(280 30% 10% / 0.5) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -303,10 +303,10 @@
 
   /* Nav bar */
   .nav-dark {
-    background: hsl(250 40% 10% / 0.9);
+    background: hsl(280 28% 18% / 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid hsl(var(--border));
-    box-shadow: 0 4px 24px hsl(260 50% 5% / 0.4);
+    border-bottom: 1px solid hsl(275 20% 32% / 0.6);
+    box-shadow: 0 4px 24px hsl(280 40% 8% / 0.5);
   }
 }
