@@ -52,7 +52,7 @@
 
     --shadow-card: 0 2px 12px hsl(220 15% 70% / 0.15);
     --shadow-card-hover: 0 8px 30px hsl(220 15% 70% / 0.2), 0 0 12px hsl(270 60% 50% / 0.06);
-    --shadow-hero: 0 12px 40px hsl(220 15% 70% / 0.2);
+    --shadow-hero: 0 12px 40px hsl(270 40% 30% / 0.3);
     --shadow-glow-rose: 0 0 20px hsl(270 60% 50% / 0.1), 0 0 40px hsl(270 60% 50% / 0.04);
     --shadow-glow-gold: 0 0 16px hsl(45 90% 48% / 0.15), 0 0 32px hsl(45 90% 48% / 0.06);
     --shadow-glow-silver: 0 0 14px hsl(210 10% 55% / 0.12);
