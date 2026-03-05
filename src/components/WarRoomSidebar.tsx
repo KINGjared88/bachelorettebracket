@@ -1,6 +1,6 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { Clock, Users, Skull, Flame } from "lucide-react";
+import { Clock, Users, Skull, Flame, Trophy, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 
 function getNextEpisode(): { date: Date; label: string } | null {
