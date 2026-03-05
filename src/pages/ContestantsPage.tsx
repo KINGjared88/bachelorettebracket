@@ -1,73 +1,18 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-
-// Local cache for resolved images
-const IMAGE_CACHE_KEY = "bracket_hq_images";
-
-function getImageCache(): Record<string, { url: string; ts: number }> {
-  try {
-    return JSON.parse(localStorage.getItem(IMAGE_CACHE_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function setImageCache(cache: Record<string, { url: string; ts: number }>) {
-  localStorage.setItem(IMAGE_CACHE_KEY, JSON.stringify(cache));
-}
-
-function useResolvedImage(name: string, csvImageUrl?: string): string | null {
-  const [url, setUrl] = useState<string | null>(csvImageUrl || null);
-
-  useEffect(() => {
-    if (csvImageUrl) {
-      setUrl(csvImageUrl);
-      return;
-    }
-
-    const cache = getImageCache();
-    const cached = cache[name.toLowerCase()];
-    const cacheMs = CONFIG.IMAGE_CACHE_DAYS * 24 * 60 * 60 * 1000;
-
-    if (cached && Date.now() - cached.ts < cacheMs) {
-      setUrl(cached.url);
-      return;
-    }
-
-    // Call edge function
-    let cancelled = false;
-    supabase.functions.invoke("resolve-image", { body: { name } }).then(({ data }) => {
-      if (cancelled) return;
-      if (data?.imageUrl) {
-        setUrl(data.imageUrl);
-        const c = getImageCache();
-        c[name.toLowerCase()] = { url: data.imageUrl, ts: Date.now() };
-        setImageCache(c);
-      }
-    });
-
-    return () => { cancelled = true; };
-  }, [name, csvImageUrl]);
-
-  return url;
-}
+import { User, MapPin, Briefcase } from "lucide-react";
+import { useState } from "react";
 
 function ContestantAvatar({ name, imageUrl, status }: { name: string; imageUrl?: string; status: string }) {
-  const resolvedUrl = useResolvedImage(name, imageUrl);
+  const [imgError, setImgError] = useState(false);
 
-  if (resolvedUrl) {
+  if (imageUrl && !imgError) {
     return (
       <img
-        src={resolvedUrl}
+        src={imageUrl}
         alt={name}
-        className={`w-16 h-16 rounded-full object-cover mx-auto mb-2 ${status === "eliminated" ? "grayscale" : ""}`}
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = "none";
-          (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
-        }}
+        className={`w-20 h-20 rounded-full object-cover mx-auto mb-2 ${status === "eliminated" ? "grayscale" : ""}`}
+        onError={() => setImgError(true)}
       />
     );
   }
@@ -75,14 +20,15 @@ function ContestantAvatar({ name, imageUrl, status }: { name: string; imageUrl?:
 }
 
 function LeadAvatar({ name, imageUrl }: { name: string; imageUrl?: string }) {
-  const resolvedUrl = useResolvedImage(name, imageUrl);
+  const [imgError, setImgError] = useState(false);
 
-  if (resolvedUrl) {
+  if (imageUrl && !imgError) {
     return (
       <img
-        src={resolvedUrl}
+        src={imageUrl}
         alt={name}
         className="w-20 h-20 rounded-full object-cover"
+        onError={() => setImgError(true)}
       />
     );
   }
@@ -95,11 +41,13 @@ function LeadAvatar({ name, imageUrl }: { name: string; imageUrl?: string }) {
 
 function PlaceholderAvatar({ className = "" }: { className?: string }) {
   return (
-    <div className={`w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 ${className}`}>
-      <User className="w-8 h-8 text-primary" />
+    <div className={`w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 ${className}`}>
+      <User className="w-10 h-10 text-primary" />
     </div>
   );
 }
+
+const LEAD_IMAGE = "https://www.tvguide.com/a/img/hub/2026/03/03/a08321a3-3975-4aff-9b8d-de9cf2b73fe6/taylor.jpg";
 
 export default function ContestantsPage() {
   const { data } = useAppData();
@@ -113,7 +61,7 @@ export default function ContestantsPage() {
 
       {/* Lead hero card */}
       <div className="hero-gradient rounded-2xl p-6 text-primary-foreground flex items-center gap-4">
-        <LeadAvatar name={CONFIG.LEAD_NAME} />
+        <LeadAvatar name={CONFIG.LEAD_NAME} imageUrl={LEAD_IMAGE} />
         <div>
           <p className="text-sm uppercase tracking-wider opacity-70">Season Lead — The Bachelorette</p>
           <h2 className="font-display text-xl font-bold">{CONFIG.LEAD_NAME}</h2>
@@ -128,6 +76,17 @@ export default function ContestantsPage() {
             <div key={c.name} className="bg-card rounded-xl p-4 card-shadow text-center hover:card-shadow-hover transition-all">
               <ContestantAvatar name={c.name} imageUrl={c.imageUrl} status={c.status} />
               <p className="font-semibold text-sm truncate">{c.name}</p>
+              {c.age && <p className="text-xs text-muted-foreground">Age {c.age}</p>}
+              {c.occupation && (
+                <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
+                  <Briefcase className="w-3 h-3" /> {c.occupation}
+                </p>
+              )}
+              {c.hometown && (
+                <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
+                  <MapPin className="w-3 h-3" /> {c.hometown}
+                </p>
+              )}
               <span className="status-active mt-1">Active</span>
               <div className="mt-2 flex justify-center gap-3 text-xs text-muted-foreground">
                 <span>🌹 {c.rosesThisWeek} wk</span>
@@ -147,6 +106,12 @@ export default function ContestantsPage() {
               <div key={c.name} className="bg-card rounded-xl p-4 card-shadow text-center opacity-50">
                 <ContestantAvatar name={c.name} imageUrl={c.imageUrl} status={c.status} />
                 <p className="font-semibold text-sm truncate">{c.name}</p>
+                {c.age && <p className="text-xs text-muted-foreground">Age {c.age}</p>}
+                {c.occupation && (
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
+                    <Briefcase className="w-3 h-3" /> {c.occupation}
+                  </p>
+                )}
                 <span className="status-eliminated mt-1">Eliminated</span>
                 <p className="text-xs text-muted-foreground mt-2">🌹 {c.totalRoses} total</p>
               </div>
