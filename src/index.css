@@ -43,13 +43,21 @@
     --rose-pink: 340 70% 55%;
     --rose-pink-light: 340 70% 92%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(270 60% 50%), hsl(270 50% 35%));
+    --fire: 15 90% 55%;
+    --fire-light: 15 90% 92%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(270 60% 45%), hsl(270 50% 30%));
     --gradient-accent: linear-gradient(135deg, hsl(270 60% 50%), hsl(25 95% 55%));
     --gradient-card-hover: linear-gradient(135deg, hsl(270 60% 50% / 0.05), hsl(25 95% 55% / 0.05));
+    --gradient-section-alt: linear-gradient(180deg, hsl(270 30% 96%), hsl(270 20% 98%));
+    --gradient-heatmap-hot: linear-gradient(90deg, hsl(270 60% 50% / 0.15), hsl(25 95% 55% / 0.2));
+    --gradient-heatmap-cold: linear-gradient(90deg, hsl(270 20% 98%), hsl(270 15% 96%));
 
     --shadow-card: 0 2px 12px hsl(270 40% 10% / 0.06);
     --shadow-card-hover: 0 8px 30px hsl(270 40% 10% / 0.12);
     --shadow-hero: 0 20px 60px hsl(270 60% 50% / 0.2);
+    --shadow-glow-orange: 0 0 20px hsl(25 95% 55% / 0.3);
+    --shadow-glow-eliminated: 0 0 15px hsl(0 70% 50% / 0.25);
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
@@ -119,10 +127,36 @@
     box-shadow: var(--shadow-card-hover);
   }
 
+  .section-alt {
+    background: var(--gradient-section-alt);
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .glow-orange {
+    box-shadow: var(--shadow-glow-orange);
+  }
+
+  .glow-eliminated {
+    box-shadow: var(--shadow-glow-eliminated);
+  }
+
   .rose-badge {
     @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
     background: hsl(var(--rose-pink-light));
     color: hsl(var(--rose-pink));
+  }
+
+  .fire-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold;
+    background: hsl(var(--fire-light));
+    color: hsl(var(--fire));
   }
 
   .status-active {
@@ -150,5 +184,56 @@
   .rank-bronze {
     background: linear-gradient(135deg, hsl(30 50% 45% / 0.15), hsl(30 50% 45% / 0.05));
     border-left: 3px solid hsl(var(--bronze));
+  }
+
+  .bracket-lines {
+    background-image: 
+      linear-gradient(90deg, hsl(270 60% 50% / 0.04) 1px, transparent 1px),
+      linear-gradient(hsl(270 60% 50% / 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .headline-ticker {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, hsl(25 95% 55%), hsl(15 90% 50%));
+  }
+
+  .bulletin-card {
+    @apply bg-card rounded-xl p-5 card-shadow relative;
+    border-left: 4px solid hsl(var(--secondary));
+  }
+
+  .bulletin-card-important {
+    @apply bg-card rounded-xl p-5 relative;
+    border-left: 4px solid hsl(var(--secondary));
+    box-shadow: var(--shadow-card), inset 0 0 0 1px hsl(25 95% 55% / 0.2);
+    background: linear-gradient(135deg, hsl(25 95% 55% / 0.03), hsl(var(--card)));
+  }
+
+  .medal-ribbon {
+    @apply relative;
+  }
+  .medal-ribbon::before {
+    content: '';
+    @apply absolute -left-1 top-0 bottom-0 w-1 rounded-full;
+  }
+  .medal-ribbon-gold::before {
+    background: linear-gradient(180deg, hsl(45 90% 50%), hsl(45 90% 40%));
+  }
+  .medal-ribbon-silver::before {
+    background: linear-gradient(180deg, hsl(210 10% 70%), hsl(210 10% 55%));
+  }
+  .medal-ribbon-bronze::before {
+    background: linear-gradient(180deg, hsl(30 50% 45%), hsl(30 50% 35%));
+  }
+
+  .stat-card {
+    @apply bg-card rounded-xl p-4 card-shadow hover-lift;
+  }
+
+  .stat-card-accent {
+    @apply rounded-xl p-4 hover-lift text-primary-foreground;
+    background: var(--gradient-accent);
+    box-shadow: var(--shadow-hero);
   }
 }
