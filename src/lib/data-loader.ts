@@ -69,14 +69,13 @@ function generateDemoData(): AppData {
   const results: WeeklyResult[] = [];
   for (let week = 1; week <= 4; week++) {
     DEMO_CONTESTANTS.forEach((c) => {
-      const elim = eliminated.has(c) && week === 4;
       results.push({
         week,
         episodeDate: CONFIG.EPISODE_SCHEDULE[week - 1] || "",
         contestantName: c,
-        receivedRose: !elim,
-        eliminated: elim,
-        rosesThisWeek: elim ? 0 : 1,
+        receivedRose: true,
+        eliminated: false,
+        rosesThisWeek: 1,
       });
     });
   }
