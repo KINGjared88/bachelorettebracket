@@ -1,6 +1,6 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { User, MapPin, Briefcase, Filter, Flame, Users } from "lucide-react";
+import { User, MapPin, Briefcase, Filter, Users } from "lucide-react";
 import { useState, useMemo } from "react";
 
 function ContestantImage({ name, imageUrl, status }: { name: string; imageUrl?: string; status: string }) {
