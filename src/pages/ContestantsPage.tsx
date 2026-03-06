@@ -53,19 +53,29 @@ export default function ContestantsPage() {
 
 
 
-  const pointsGenerated = useMemo(() => {
-    const pts: Record<string, number> = {};
-    data.contestants.forEach((c) => { pts[c.name] = c.totalRoses; });
-    return pts;
-  }, [data.contestants]);
+  // Derive elimination status from results data
+  const elimMap = useMemo(() => buildEliminationMap(data.results), [data.results]);
+  const latestWeek = useMemo(() => getLatestWeekNumber(data.results), [data.results]);
 
   const allContestants = useMemo(() => {
-    let list = data.contestants.filter((c) => !c.isLead);
+    // Enrich contestants with derived elimination status
+    let list = data.contestants
+      .filter((c) => !c.isLead)
+      .map((c) => {
+        const ew = elimMap[c.name];
+        const isElim = ew !== undefined && ew <= latestWeek;
+        return {
+          ...c,
+          status: isElim ? "eliminated" as const : "active" as const,
+          eliminatedWeek: ew,
+        };
+      });
+
     if (sortMode === "active") list = list.filter((c) => c.status === "active");
     else if (sortMode === "eliminated") list = list.filter((c) => c.status === "eliminated");
     else if (sortMode === "most-points") list = [...list].sort((a, b) => (pointsGenerated[b.name] || 0) - (pointsGenerated[a.name] || 0));
     return list;
-  }, [data.contestants, sortMode, pointsGenerated]);
+  }, [data.contestants, data.results, sortMode, pointsGenerated, elimMap, latestWeek]);
 
   return (
     <div className="space-y-6 animate-slide-up page-bg">
