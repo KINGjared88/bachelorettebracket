@@ -13,12 +13,12 @@ export default function PlayerDetailPage() {
   const playerPicks = useMemo(() => {
     if (!player) return [];
     const picks = data.picks
-      .filter((p) => p.playerId === player.id || p.playerName === player.name)
+      .filter((p) => p.playerName === player.name)
       .sort((a, b) => b.rankPoints - a.rankPoints);
 
     const roseMap: Record<string, number> = {};
     data.results.forEach((r) => {
-      if (r.receivedRose) roseMap[r.contestantName] = (roseMap[r.contestantName] || 0) + r.rosesThisWeek;
+      if (r.receivedRose) roseMap[r.contestantName] = (roseMap[r.contestantName] || 0) + (r.rosesThisWeek || 1);
     });
 
     const contestantStatus: Record<string, "active" | "eliminated"> = {};
@@ -36,27 +36,42 @@ export default function PlayerDetailPage() {
     });
   }, [player, data]);
 
+  // Use scores_weekly for weekly trend if available
   const weeklyPoints = useMemo(() => {
     if (!player) return [];
+
+    // Try scores_weekly first (authoritative)
+    const weeklyScores = data.scoresWeekly.filter((s) => s.playerName === player.name);
+    if (weeklyScores.length > 0) {
+      let cumulative = 0;
+      return weeklyScores
+        .sort((a, b) => a.week.localeCompare(b.week))
+        .map((s) => {
+          cumulative += s.weeklyPoints;
+          return { week: s.week, points: s.weeklyPoints, cumulative };
+        });
+    }
+
+    // Fallback: compute from picks + results
     const pickMap: Record<string, number> = {};
     data.picks
-      .filter((p) => p.playerId === player.id || p.playerName === player.name)
+      .filter((p) => p.playerName === player.name)
       .forEach((p) => { pickMap[p.contestantName] = p.rankPoints; });
 
-    const weeks: Record<number, number> = {};
-    let cumulative = 0;
+    const weeks: Record<string, number> = {};
     data.results.forEach((r) => {
       if (r.receivedRose && pickMap[r.contestantName]) {
-        weeks[r.week] = (weeks[r.week] || 0) + pickMap[r.contestantName] * r.rosesThisWeek;
+        weeks[r.week] = (weeks[r.week] || 0) + pickMap[r.contestantName] * (r.rosesThisWeek || 1);
       }
     });
 
+    let cumulative = 0;
     return Object.entries(weeks)
+      .sort(([a], [b]) => a.localeCompare(b))
       .map(([w, pts]) => {
         cumulative += pts;
-        return { week: `Wk ${w}`, points: pts, cumulative };
-      })
-      .sort((a, b) => parseInt(a.week.slice(3)) - parseInt(b.week.slice(3)));
+        return { week: w, points: pts, cumulative };
+      });
   }, [player, data]);
 
   if (!player) {
@@ -68,7 +83,7 @@ export default function PlayerDetailPage() {
     );
   }
 
-  const rank = data.players.findIndex((p) => p.id === player.id) + 1;
+  const rank = player.rank || data.players.findIndex((p) => p.id === player.id) + 1;
   const bestPick = [...playerPicks].sort((a, b) => b.pointsEarned - a.pointsEarned)[0];
   const worstPick = [...playerPicks].sort((a, b) => a.pointsEarned - b.pointsEarned)[0];
 
@@ -120,7 +135,7 @@ export default function PlayerDetailPage() {
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weeklyPoints}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(240 10% 20%)" />
-              <XAxis dataKey="week" tick={{ fontSize: 12, fill: "hsl(240 5% 55%)" }} />
+              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(240 5% 55%)" }} />
               <YAxis tick={{ fontSize: 12, fill: "hsl(240 5% 55%)" }} />
               <Tooltip contentStyle={{ background: "hsl(240 12% 12%)", border: "1px solid hsl(240 10% 25%)", borderRadius: "8px", color: "hsl(240 5% 90%)" }} />
               <Line type="monotone" dataKey="cumulative" stroke="hsl(270 60% 55%)" strokeWidth={2.5} dot={{ r: 4, fill: "hsl(270 60% 55%)" }} />
@@ -140,7 +155,7 @@ export default function PlayerDetailPage() {
           <h2 className="font-display font-bold mb-3">Points by Week</h2>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={weeklyPoints}>
-              <XAxis dataKey="week" tick={{ fontSize: 12, fill: "hsl(240 5% 55%)" }} />
+              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(240 5% 55%)" }} />
               <YAxis tick={{ fontSize: 12, fill: "hsl(240 5% 55%)" }} />
               <Tooltip contentStyle={{ background: "hsl(240 12% 12%)", border: "1px solid hsl(240 10% 25%)", borderRadius: "8px", color: "hsl(240 5% 90%)" }} />
               <Bar dataKey="points" fill="hsl(270 60% 55%)" radius={[4, 4, 0, 0]} />

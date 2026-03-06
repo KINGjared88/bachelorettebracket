@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Trophy, Users, Grid3X3, Megaphone, Newspaper, BookOpen, Menu, X, Sun, Moon } from "lucide-react";
+import { Home, Trophy, Users, Grid3X3, Megaphone, Newspaper, BookOpen, Menu, X, Sun, Moon, CalendarDays, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 
@@ -8,9 +8,10 @@ const navItems = [
   { path: "/leaderboard", label: "Standings", icon: Trophy },
   { path: "/contestants", label: "The Men", icon: Grid3X3 },
   { path: "/players", label: "The Bracket", icon: Users },
+  { path: "/results", label: "Results", icon: CalendarDays },
+  { path: "/weekly-scores", label: "Weekly", icon: BarChart3 },
   { path: "/announcements", label: "Updates", icon: Megaphone },
   { path: "/external-news", label: "Intel", icon: Newspaper },
-  { path: "/setup-guide", label: "Admin", icon: BookOpen },
 ];
 
 export function AppNav() {
