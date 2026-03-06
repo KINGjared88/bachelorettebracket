@@ -156,6 +156,11 @@ Deno.serve(async (req) => {
         }
 
         try {
+          const feedUrl = new URL(feed.url);
+          if (!ALLOWED_HOSTS.has(feedUrl.hostname)) {
+            errors.push(`${feed.name}: URL not permitted`);
+            return;
+          }
           const resp = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
           if (!resp.ok) {
             errors.push(`${feed.name}: HTTP ${resp.status}`);
