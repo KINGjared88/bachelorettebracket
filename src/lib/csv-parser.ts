@@ -10,6 +10,15 @@ export interface CSVParseResult {
  * quoted fields, commas inside fields, and multiline text.
  */
 export function parseCSV(text: string): CSVParseResult {
+  // Detect HTML response (Google login page when sheet is not public)
+  const first200 = text.slice(0, 200).toLowerCase();
+  if (first200.includes("<!doctype") || first200.includes("<html")) {
+    return {
+      data: [],
+      error: "Sheet not publicly viewable — check sharing settings.",
+    };
+  }
+
   try {
     const result = Papa.parse<Record<string, string>>(text.trim(), {
       header: true,

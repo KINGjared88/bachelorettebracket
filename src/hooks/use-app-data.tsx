@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { AppData } from "@/types";
 import { loadAppData } from "@/lib/data-loader";
+import { CONFIG } from "@/config";
 
 const defaultData: AppData = {
   players: [],
@@ -8,6 +9,9 @@ const defaultData: AppData = {
   results: [],
   contestants: [],
   announcements: [],
+  weeks: [],
+  scoresWeekly: [],
+  leaderboardEntries: [],
   lastUpdated: null,
   loading: true,
   error: null,
@@ -30,6 +34,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refresh();
+  }, [refresh]);
+
+  // Auto-refresh on interval
+  useEffect(() => {
+    const interval = setInterval(refresh, CONFIG.REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, [refresh]);
 
   return (

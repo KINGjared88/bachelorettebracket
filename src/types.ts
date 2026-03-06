@@ -4,6 +4,8 @@ export interface Player {
   totalPoints: number;
   weeklyChange?: number;
   topPick?: string;
+  rank?: number;
+  lastUpdated?: string;
 }
 
 export interface Pick {
@@ -11,16 +13,16 @@ export interface Pick {
   playerName: string;
   contestantName: string;
   rankPoints: number;
+  updatedAt?: string;
 }
 
 export interface WeeklyResult {
-  week: number;
-  episodeDate: string;
+  week: string;
   contestantName: string;
   receivedRose: boolean;
   eliminated: boolean;
   rosesThisWeek: number;
-  imageUrl?: string;
+  updatedAt?: string;
 }
 
 export interface Contestant {
@@ -36,11 +38,30 @@ export interface Contestant {
   hometown?: string;
 }
 
+export interface Week {
+  week: string;
+  episodeDate: string;
+}
+
+export interface ScoresWeekly {
+  week: string;
+  playerName: string;
+  weeklyPoints: number;
+  updatedAt?: string;
+}
+
+export interface LeaderboardEntry {
+  playerName: string;
+  totalPoints: number;
+  lastUpdated?: string;
+  rank: number;
+}
+
 export interface Announcement {
-  date: string;
-  headline: string;
+  publishedAt: string;
+  title: string;
   body: string;
-  link?: string;
+  linkUrl?: string;
 }
 
 export interface NewsItem {
@@ -53,7 +74,7 @@ export interface NewsItem {
 
 export interface PlayerDetail extends Player {
   picks: PlayerPick[];
-  weeklyPoints: { week: number; points: number }[];
+  weeklyPoints: { week: string; points: number }[];
 }
 
 export interface PlayerPick {
@@ -70,6 +91,9 @@ export interface AppData {
   results: WeeklyResult[];
   contestants: Contestant[];
   announcements: Announcement[];
+  weeks: Week[];
+  scoresWeekly: ScoresWeekly[];
+  leaderboardEntries: LeaderboardEntry[];
   lastUpdated: Date | null;
   loading: boolean;
   error: string | null;
