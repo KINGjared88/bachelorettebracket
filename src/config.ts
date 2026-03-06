@@ -50,12 +50,24 @@ export const CONFIG = {
    * Curated RSS feeds for Bachelorette / Bachelor Nation news.
    */
   RSS_FEEDS: [
-    { name: "Entertainment Tonight – The Bachelorette", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
-    { name: "Us Weekly – Bachelor Nation", url: "https://www.usmagazine.com/entertainment/the-bachelor/feed/" },
-    { name: "People – The Bachelorette", url: "https://people.com/tag/the-bachelorette/feed/" },
-    { name: "E! News – The Bachelorette", url: "https://www.eonline.com/shows/the-bachelorette/rss" },
-    { name: "Reality Tea – Bachelor", url: "https://www.realitytea.com/category/the-bachelorette/feed/" },
-    { name: "Screen Rant – The Bachelor", url: "https://screenrant.com/tag/the-bachelorette/feed/" },
+    { name: "Entertainment Tonight", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
+    { name: "Us Weekly", url: "https://www.usmagazine.com/entertainment/the-bachelor/feed/" },
+    { name: "Reality Tea", url: "https://www.realitytea.com/category/the-bachelorette/feed/" },
+    { name: "Screen Rant", url: "https://screenrant.com/tag/the-bachelorette/feed/" },
+    { name: "TMZ", url: "https://www.tmz.com/rss.xml" },
+    { name: "Page Six", url: "https://pagesix.com/feed/" },
+    { name: "Radar Online", url: "https://radaronline.com/feed/" },
+    { name: "Reality Blurb", url: "https://realityblurb.com/feed/" },
+    { name: "The Ashley's Reality Roundup", url: "https://www.theashleysrealityroundup.com/feed/" },
+    { name: "TV Insider", url: "https://www.tvinsider.com/feed/" },
+    { name: "Reality TV World", url: "https://www.realitytvworld.com/realitytvworld.xml" },
+    { name: "Nicki Swift", url: "https://www.nickiswift.com/feed/" },
+    { name: "Monsters & Critics", url: "https://www.monstersandcritics.com/feed/" },
+    { name: "Distractify", url: "https://www.distractify.com/feed" },
+    { name: "Soap Dirt", url: "https://soapdirt.com/feed/" },
+    { name: "Heavy", url: "https://heavy.com/feed/" },
+    { name: "PopCulture", url: "https://popculture.com/feed/" },
+    { name: "Showbiz Cheat Sheet", url: "https://www.cheatsheet.com/feed/" },
   ] as { name: string; url: string }[],
 
   /** Keywords to filter news relevance (case-insensitive) */
