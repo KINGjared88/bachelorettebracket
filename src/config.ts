@@ -3,6 +3,10 @@
 // Edit these values to connect to your Excel-exported CSVs.
 // ============================================================
 
+const SHEET_ID = "1nXSDeo9UM-kTbFUeUYPCJFdhY8RIBMThwTX03VekNbM";
+const csvUrl = (gid: string) =>
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+
 export const CONFIG = {
   /** Season info */
   SEASON_TITLE: "The Bachelorette – Season 22 (2026)",
@@ -27,25 +31,23 @@ export const CONFIG = {
     "2026-05-31",
   ],
 
-  /** CSV data endpoints — paste your public CSV download URLs here */
+  /** CSV data endpoints — 8 Google Sheets tabs */
   DATA_ENDPOINTS: {
-    players_csv_url: "",
-    picks_csv_url: "",
-    results_csv_url: "",
-    announcements_csv_url: "",
+    players_csv_url: csvUrl("973364698"),
+    contestants_csv_url: csvUrl("216725842"),
+    weeks_csv_url: csvUrl("1039378093"),
+    picks_csv_url: csvUrl("791486880"),
+    results_csv_url: csvUrl("312202978"),
+    scores_weekly_csv_url: csvUrl("540754007"),
+    leaderboard_csv_url: csvUrl("1722774985"),
+    announcements_csv_url: csvUrl("1984954399"),
   },
 
-  /**
-   * If you only have ONE CSV with a `type` column
-   * ("player" | "pick" | "result" | "announcement"),
-   * paste it here instead. The individual URLs above take priority.
-   */
-  SINGLE_CSV_URL: "",
+  /** Auto-refresh interval in milliseconds (60s during season) */
+  REFRESH_INTERVAL_MS: 60_000,
 
   /**
    * Curated RSS feeds for Bachelorette / Bachelor Nation news.
-   * These are fetched server-side via the rss-proxy edge function.
-   * Use tag/category-specific URLs so results are relevant.
    */
   RSS_FEEDS: [
     { name: "Entertainment Tonight – The Bachelorette", url: "https://www.etonline.com/tv/the-bachelorette/rss" },
