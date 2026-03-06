@@ -1,12 +1,12 @@
 import { useAppData } from "@/hooks/use-app-data";
 import { CONFIG } from "@/config";
-import { RefreshCw, Trophy, DollarSign, TrendingUp, ArrowUp, ArrowDown, AlertCircle, Loader2, Zap, Star, Flame, Skull } from "lucide-react";
+import { RefreshCw, Trophy, DollarSign, TrendingUp, ArrowUp, ArrowDown, AlertCircle, Loader2, Zap, Flame, Skull } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 
-function WeeklyHeadlineBanner({ announcements }: { announcements: { headline: string; body: string }[] }) {
+function WeeklyHeadlineBanner({ announcements }: { announcements: { title: string; body: string }[] }) {
   const [idx, setIdx] = useState(0);
-  const items = announcements.length > 0 ? announcements : [{ headline: "SEASON 22 INCOMING", body: "The Bachelorette bracket pool is about to begin. Lock in your picks!" }];
+  const items = announcements.length > 0 ? announcements : [{ title: "SEASON 22 INCOMING", body: "The Bachelorette bracket pool is about to begin. Lock in your picks!" }];
 
   useEffect(() => {
     if (items.length <= 1) return;
@@ -21,7 +21,7 @@ function WeeklyHeadlineBanner({ announcements }: { announcements: { headline: st
         <p className="text-xs font-bold uppercase tracking-widest opacity-80 flex items-center gap-1.5 font-body">
           <Zap className="w-3.5 h-3.5" /> Breaking
         </p>
-        <p className="font-display text-lg md:text-xl font-bold mt-1">{current.headline}</p>
+        <p className="font-display text-lg md:text-xl font-bold mt-1">{current.title}</p>
         <p className="text-sm opacity-80 mt-0.5">{current.body}</p>
       </div>
       {items.length > 1 && (
@@ -35,14 +35,23 @@ function WeeklyHeadlineBanner({ announcements }: { announcements: { headline: st
   );
 }
 
-
-function QuickStats({ players }: { players: { name: string; totalPoints: number; weeklyChange?: number }[] }) {
-  const hotStreak = [...players].sort((a, b) => (b.weeklyChange || 0) - (a.weeklyChange || 0))[0];
-  const bigDrop = [...players].sort((a, b) => (a.weeklyChange || 0) - (b.weeklyChange || 0))[0];
+function QuickStats({ players, scoresWeekly }: { players: { name: string; totalPoints: number; weeklyChange?: number }[]; scoresWeekly: { week: string; playerName: string; weeklyPoints: number }[] }) {
+  // Find hottest/coldest from latest week in scores_weekly
+  const latestWeekStats = useMemo(() => {
+    if (scoresWeekly.length === 0) return { hot: null as null | { name: string; pts: number }, cold: null as null | { name: string; pts: number } };
+    const weeks = [...new Set(scoresWeekly.map((s) => s.week))].sort();
+    const latestWeek = weeks[weeks.length - 1];
+    const latest = scoresWeekly.filter((s) => s.week === latestWeek);
+    const sorted = [...latest].sort((a, b) => b.weeklyPoints - a.weeklyPoints);
+    return {
+      hot: sorted[0] ? { name: sorted[0].playerName, pts: sorted[0].weeklyPoints } : null,
+      cold: sorted[sorted.length - 1] ? { name: sorted[sorted.length - 1].playerName, pts: sorted[sorted.length - 1].weeklyPoints } : null,
+    };
+  }, [scoresWeekly]);
 
   const stats = [
-    { icon: Flame, label: "Hottest", value: hotStreak?.name || "—", sub: hotStreak?.weeklyChange ? `+${hotStreak.weeklyChange}` : "—", color: "text-secondary" },
-    { icon: Skull, label: "Coldest", value: bigDrop?.name || "—", sub: bigDrop?.weeklyChange ? `${bigDrop.weeklyChange}` : "—", color: "text-destructive" },
+    { icon: Flame, label: "Hottest", value: latestWeekStats.hot?.name || "—", sub: latestWeekStats.hot ? `+${latestWeekStats.hot.pts}` : "—", color: "text-secondary" },
+    { icon: Skull, label: "Coldest", value: latestWeekStats.cold?.name || "—", sub: latestWeekStats.cold ? `${latestWeekStats.cold.pts}` : "—", color: "text-destructive" },
   ];
 
   return (
@@ -67,23 +76,18 @@ export default function HomePage() {
 
   return (
     <div className="space-y-6 animate-slide-up page-bg">
-      {/* Breaking Banner — top of main column */}
+      {/* Breaking Banner */}
       <WeeklyHeadlineBanner announcements={data.announcements} />
 
       {/* Hero */}
       <div className="hero-gradient rounded-2xl p-6 md:p-10 text-primary-foreground relative overflow-hidden">
         <div className="relative">
           <p className="text-xs uppercase tracking-widest opacity-50 mb-1 font-body">GoodLeap Presents</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold mb-1">
-            Bracket HQ
-          </h1>
-          <p className="text-lg md:text-xl font-medium opacity-90 mb-1">
-            {CONFIG.SEASON_TITLE}
-          </p>
+          <h1 className="font-display text-3xl md:text-5xl font-bold mb-1">Bracket HQ</h1>
+          <p className="text-lg md:text-xl font-medium opacity-90 mb-1">{CONFIG.SEASON_TITLE}</p>
           <p className="text-sm opacity-50 mb-6 font-body">
             Lead: {CONFIG.LEAD_NAME} · Premieres {new Date(CONFIG.PREMIERE_DATE + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
           </p>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-4 backdrop-blur-sm hover-lift">
               <DollarSign className="w-5 h-5 mb-1 opacity-70" />
@@ -99,10 +103,9 @@ export default function HomePage() {
         </div>
       </div>
 
-
       {/* Quick Stats */}
       {!data.loading && data.players.length > 0 && (
-        <QuickStats players={data.players} />
+        <QuickStats players={data.players} scoresWeekly={data.scoresWeekly} />
       )}
 
       {/* Last updated + refresh */}
@@ -187,12 +190,6 @@ export default function HomePage() {
                 </div>
                 <div className="text-right">
                   <p className="font-mono font-bold">{player.totalPoints}</p>
-                  {player.weeklyChange !== undefined && player.weeklyChange !== 0 && (
-                    <span className={`flex items-center gap-0.5 text-xs font-medium ${player.weeklyChange > 0 ? "text-green-500" : "text-destructive"}`}>
-                      {player.weeklyChange > 0 ? <ArrowUp className="w-3 h-3 animate-bounce-arrow" /> : <ArrowDown className="w-3 h-3 animate-bounce-arrow" />}
-                      {Math.abs(player.weeklyChange)}
-                    </span>
-                  )}
                 </div>
               </div>
             ))}
@@ -207,8 +204,8 @@ export default function HomePage() {
           <div className="space-y-3">
             {data.announcements.slice(0, 2).map((ann, i) => (
               <div key={i} className={i === 0 ? "bulletin-card-important" : "bulletin-card"}>
-                <p className="text-xs text-muted-foreground mb-1 font-body">{ann.date}</p>
-                <p className="font-semibold">{ann.headline}</p>
+                <p className="text-xs text-muted-foreground mb-1 font-body">{ann.publishedAt}</p>
+                <p className="font-semibold">{ann.title}</p>
                 <p className="text-sm text-muted-foreground mt-1">{ann.body}</p>
               </div>
             ))}

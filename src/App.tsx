@@ -14,6 +14,8 @@ import PlayerDetailPage from "@/pages/PlayerDetailPage";
 import ContestantsPage from "@/pages/ContestantsPage";
 import AnnouncementsPage from "@/pages/AnnouncementsPage";
 import ExternalNewsPage from "@/pages/ExternalNewsPage";
+import ResultsPage from "@/pages/ResultsPage";
+import WeeklyScoresPage from "@/pages/WeeklyScoresPage";
 import SetupGuidePage from "@/pages/SetupGuidePage";
 import NotFound from "@/pages/NotFound";
 
@@ -37,6 +39,8 @@ const App = () => (
                     <Route path="/players" element={<PlayersListPage />} />
                     <Route path="/players/:playerId" element={<PlayerDetailPage />} />
                     <Route path="/contestants" element={<ContestantsPage />} />
+                    <Route path="/results" element={<ResultsPage />} />
+                    <Route path="/weekly-scores" element={<WeeklyScoresPage />} />
                     <Route path="/announcements" element={<AnnouncementsPage />} />
                     <Route path="/external-news" element={<ExternalNewsPage />} />
                     <Route path="/setup-guide" element={<SetupGuidePage />} />
