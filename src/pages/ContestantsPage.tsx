@@ -53,6 +53,12 @@ export default function ContestantsPage() {
 
 
 
+  const pointsGenerated = useMemo(() => {
+    const pts: Record<string, number> = {};
+    data.contestants.forEach((c) => { pts[c.name] = c.totalRoses; });
+    return pts;
+  }, [data.contestants]);
+
   // Derive elimination status from results data
   const elimMap = useMemo(() => buildEliminationMap(data.results), [data.results]);
   const latestWeek = useMemo(() => getLatestWeekNumber(data.results), [data.results]);
