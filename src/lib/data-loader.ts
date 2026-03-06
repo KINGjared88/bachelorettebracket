@@ -72,11 +72,15 @@ function parseContestantsCSV(rows: Record<string, string>[]): Contestant[] {
 
 function parseWeeksCSV(rows: Record<string, string>[]): Week[] {
   return rows
-    .filter((r) => (r.week || "").trim())
-    .map((r) => ({
-      week: (r.week || "").trim(),
-      episodeDate: (r.episode_date || "").trim(),
-    }));
+    .map((r) => {
+      // Headers may be empty (Google Sheets exports ",\n" for unnamed columns)
+      // Fall back to positional: first value = week, second value = date
+      const keys = Object.keys(r);
+      const week = (r.week || r[keys[0]] || "").trim();
+      const episodeDate = (r.episode_date || r[keys[1]] || "").trim();
+      return { week, episodeDate };
+    })
+    .filter((w) => w.week.length > 0);
 }
 
 function parsePicksCSV(rows: Record<string, string>[]): Pick[] {
