@@ -72,11 +72,15 @@ function parseContestantsCSV(rows: Record<string, string>[]): Contestant[] {
 
 function parseWeeksCSV(rows: Record<string, string>[]): Week[] {
   return rows
-    .filter((r) => (r.week || "").trim())
-    .map((r) => ({
-      week: (r.week || "").trim(),
-      episodeDate: (r.episode_date || "").trim(),
-    }));
+    .map((r) => {
+      // Headers may be empty (Google Sheets exports ",\n" for unnamed columns)
+      // Fall back to positional: first value = week, second value = date
+      const keys = Object.keys(r);
+      const week = (r.week || r[keys[0]] || "").trim();
+      const episodeDate = (r.episode_date || r[keys[1]] || "").trim();
+      return { week, episodeDate };
+    })
+    .filter((w) => w.week.length > 0);
 }
 
 function parsePicksCSV(rows: Record<string, string>[]): Pick[] {
@@ -94,14 +98,20 @@ function parsePicksCSV(rows: Record<string, string>[]): Pick[] {
 function parseResultsCSV(rows: Record<string, string>[]): WeeklyResult[] {
   return rows
     .filter((r) => (r.week || "").trim() && (r.contestant_name || "").trim())
-    .map((r) => ({
-      week: (r.week || "").trim(),
-      contestantName: (r.contestant_name || "").trim(),
-      receivedRose: isTruthy(r.received_rose),
-      eliminated: isTruthy(r.eliminated),
-      rosesThisWeek: parseInt(r.roses_this_week || "0") || 0,
-      updatedAt: (r.updated_at || "").trim() || undefined,
-    }));
+    .map((r) => {
+      // Trailing comma in CSV header creates an empty-named column that may hold the date
+      const keys = Object.keys(r);
+      const lastVal = r[keys[keys.length - 1]] || "";
+      const updatedRaw = (r.updated_at || "").trim() || lastVal.trim();
+      return {
+        week: (r.week || "").trim(),
+        contestantName: (r.contestant_name || "").trim(),
+        receivedRose: isTruthy(r.received_rose),
+        eliminated: isTruthy(r.eliminated),
+        rosesThisWeek: parseInt(r.roses_this_week || "0") || 0,
+        updatedAt: updatedRaw || undefined,
+      };
+    });
 }
 
 function parseScoresWeeklyCSV(rows: Record<string, string>[]): ScoresWeekly[] {
