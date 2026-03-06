@@ -14,6 +14,28 @@ interface FeedItem {
   summary: string;
 }
 
+// Allowed hosts for outbound RSS fetches (SSRF protection)
+const ALLOWED_HOSTS = new Set([
+  "www.etonline.com",
+  "www.usmagazine.com",
+  "www.realitytea.com",
+  "screenrant.com",
+  "www.tmz.com",
+  "pagesix.com",
+  "radaronline.com",
+  "realityblurb.com",
+  "www.theashleysrealityroundup.com",
+  "www.tvinsider.com",
+  "www.realitytvworld.com",
+  "www.nickiswift.com",
+  "www.monstersandcritics.com",
+  "www.distractify.com",
+  "soapdirt.com",
+  "heavy.com",
+  "popculture.com",
+  "www.cheatsheet.com",
+]);
+
 // In-memory cache: feedUrl -> { items, timestamp }
 const cache = new Map<string, { items: FeedItem[]; ts: number }>();
 const CACHE_MS = 30 * 60 * 1000; // 30 minutes
@@ -134,6 +156,11 @@ Deno.serve(async (req) => {
         }
 
         try {
+          const feedUrl = new URL(feed.url);
+          if (!ALLOWED_HOSTS.has(feedUrl.hostname)) {
+            errors.push(`${feed.name}: URL not permitted`);
+            return;
+          }
           const resp = await fetchWithTimeout(feed.url, FETCH_TIMEOUT_MS);
           if (!resp.ok) {
             errors.push(`${feed.name}: HTTP ${resp.status}`);
