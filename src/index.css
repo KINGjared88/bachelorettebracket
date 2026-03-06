@@ -402,18 +402,19 @@
   /* Scouting card eliminated sash */
   .eliminated-sash {
     position: absolute;
-    top: 12px;
-    right: -30px;
+    top: 18px;
+    right: -35px;
     transform: rotate(45deg);
     background: hsl(0 72% 45%);
     color: white;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    padding: 2px 32px;
+    padding: 4px 40px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     z-index: 20;
     box-shadow: 0 2px 8px hsl(0 72% 50% / 0.4);
+    white-space: nowrap;
   }
 
   /* Purple overlay for active contestants */
