@@ -29,7 +29,7 @@ export function parseCSV(text: string): CSVParseResult {
 
     if (result.errors.length > 0) {
       const criticalErrors = result.errors.filter(
-        (e) => e.type !== "FieldMismatch"
+        (e) => e.type !== "FieldMismatch" && e.type !== "Delimiter"
       );
       if (criticalErrors.length > 0) {
         return {
