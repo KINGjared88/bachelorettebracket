@@ -22,13 +22,14 @@ export function parseCSV(text: string): CSVParseResult {
   try {
     const result = Papa.parse<Record<string, string>>(text.trim(), {
       header: true,
+      delimiter: ",",
       skipEmptyLines: true,
       transformHeader: (h) => h.trim().toLowerCase().replace(/\s+/g, "_"),
     });
 
     if (result.errors.length > 0) {
       const criticalErrors = result.errors.filter(
-        (e) => e.type !== "FieldMismatch"
+        (e) => e.type !== "FieldMismatch" && e.type !== "Delimiter"
       );
       if (criticalErrors.length > 0) {
         return {
